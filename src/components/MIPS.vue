@@ -56,28 +56,32 @@ export default {
       let commRegx = new RegExp(self.commentRegx)
       let stringList = insRegx.exec(line)
       let commList = commRegx.exec(line)
+      console.log(stringList)
+      console.log(commList)
       if (stringList) {
-        let result = ''
-        for (let i = 1; i < stringList.length; i++) {
-          if (!stringList[i]) continue
-          if (stringList[i].includes('$')) {
-            result += ('<span style="color: #e67e22">' + stringList[i] + '</span>')
-          } else if (stringList[i].includes(',') || stringList[i].includes(';')) {
-            result += ('<span style="color: #8e44ad">' + stringList[i] + '</span>')
-          } else if (stringList[i].includes('//')) {
-            console.log('comment')
-            result += ('<span style="color: #bdc3c7">' + stringList[i] + '</span>')
-          } else {
-            result += ('<span style="color: #27ae60">' + stringList[i] + '</span>')
-          }
-        }
-        return result
+        return self.getSyntax(stringList)
+      } else if (commList) {
+        return self.getSyntax(commList)
       } else {
         return line
       }
     },
-    getSyntax: function (value) {
-
+    getSyntax: function (valueList) {
+      let result = ''
+      console.log(valueList)
+      for (let i = 1; i < valueList.length; i++) {
+        if (!valueList[i]) continue
+        if (valueList[i].includes('//')) {
+          result += ('<span style="color: #bdc3c7">' + valueList[i] + '</span>')
+        } else if (valueList[i].includes('$') || valueList[i].includes('x')) {
+          result += ('<span style="color: #e67e22">' + valueList[i] + '</span>')
+        } else if (valueList[i].includes(',') || valueList[i].includes(';')) {
+          result += ('<span style="color: #8e44ad">' + valueList[i] + '</span>')
+        } else {
+          result += ('<span style="color: #27ae60">' + valueList[i] + '</span>')
+        }
+      }
+      return result
     }
   }
 }
