@@ -1,14 +1,21 @@
 <template>
   <div class="hello">
-    <input id="file-upload" @change="onFileChange" accept="*" type="file" >
+    <input id="file-upload"
+           @change="onFileChange"
+           accept="*"
+           type="file">
     <el-row>
       <el-col :span="12">
-      <div v-if="fileLineList">
-        <el-row v-for="(line, index) in fileLineList" :key="index">
-          <el-col :span="1" style="background-color:#34495e; color:#ecf0f1; text-align:right;padding-right:4px;">{{index}}.</el-col>
-          <el-col :span="23" style="background-color:#3f556b" contenteditable="true" v-html="line"></el-col>
-        </el-row>
-      </div>
+        <div v-if="fileLineList">
+          <el-row v-for="(line, index)  in fileLineList"
+                  style="background-color:#3f556b"
+                  :key="index">
+            <el-col :span="1"
+                    style="background-color:#34495e; color:#ecf0f1; text-align:right;padding-right:4px;">{{index}}.</el-col>
+            <el-col :span="23"
+                    v-html="line"></el-col>
+          </el-row>
+        </div>
       </el-col>
       <el-col :span="12">
       </el-col>
@@ -17,6 +24,7 @@
 </template>
 
 <script>
+import registers from '../assets/instructions.js'
 export default {
   name: 'hello',
   data () {
@@ -44,6 +52,7 @@ export default {
   methods: {
     onFileChange: function (e) {
       let self = this
+      console.log(registers)
       let files = e.target.files || e.dataTransfer.files
       if (files.length === 1) {
         self.file = files[0]
