@@ -32,6 +32,61 @@ let allRegisters = [
   '$s8',
   '$ra'
 ]
+
+let instructions = [
+  { ins: 'lw', code: '23' },
+  { ins: 'lb', code: '20' },
+  { ins: 'lbu', code: '24' },
+  { ins: 'lh', code: '21' },
+  { ins: 'lhu', code: '25' },
+  { ins: 'sw', code: '2b' },
+  { ins: 'sb', code: '28' },
+  { ins: 'sh', code: '29' },
+  { ins: 'add', code: '0', code1: '20' },
+  { ins: 'addu', code: '0', code1: '21' },
+  { ins: 'sub', code: '0', code1: '22' },
+  { ins: 'subu', code: '0', code1: '23' },
+  { ins: 'slt', code: '0', code1: '2a' },
+  { ins: 'sltu', code: '0', code1: '2b' },
+  { ins: 'and', code: '0', code1: '24' },
+  { ins: 'or', code: '0', code1: '25' },
+  { ins: 'xor', code: '0', code1: '26' },
+  { ins: 'nor', code: '0', code1: '27' },
+  { ins: 'sll', code: '0', code1: '0' },
+  { ins: 'srl', code: '0', code1: '2' },
+  { ins: 'sra', code: '0', code1: '3' },
+  { ins: 'mult', code: '0', code1: '18' },
+  { ins: 'multu', code: '0', code1: '19' },
+  { ins: 'div', code: '0', code1: '1' },
+  { ins: 'divu', code: '0', code1: '1b' },
+  { ins: 'addi', code: '8' },
+  { ins: 'addiu', code: '9' },
+  { ins: 'andi', code: 'c' },
+  { ins: 'ori', code: 'd' },
+  { ins: 'xori', code: 'e' },
+  { ins: 'lui', code: 'f' },
+  { ins: 'slti', code: 'a' },
+  { ins: 'sltiu', code: 'b' },
+  { ins: 'beq', code: '4' },
+  { ins: 'bne', code: '5' },
+  { ins: 'blez', code: '6' },
+  { ins: 'bgtz', code: '7' },
+  // { ins: 'bltz', code: '23h' },
+  // { ins: 'bgez', code: '23h' },
+  { ins: 'j', code: '2' },
+  { ins: 'jal', code: '3' },
+  { ins: 'jalr', code: '0', code1: '9' },
+  { ins: 'jr', code: '0', code1: '8' },
+  { ins: 'mfhi', code: '0', code1: '10' },
+  { ins: 'mflo', code: '0', code1: '12' },
+  { ins: 'mthi', code: '0', code1: '11' },
+  { ins: 'mtlo', code: '0', code1: '13' },
+  { ins: 'eret', code: '10', code1: '18' },
+  // { ins: 'mfco', code: '10' },
+  { ins: 'mtco', code: '10' },
+  { ins: 'break', code: '0', code1: 'd' },
+  { ins: 'syscall', code: '0', code1: 'c' }
+]
 let register = {}
 allRegisters.forEach(
   (element, index) => {
@@ -39,4 +94,7 @@ allRegisters.forEach(
     // console.log(element)
   }
 )
-export default register
+let constants = {}
+constants.register = register
+constants.instructions = instructions
+export default constants
