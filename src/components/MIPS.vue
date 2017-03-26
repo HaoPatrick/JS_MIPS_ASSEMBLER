@@ -16,8 +16,8 @@
                   :key="index">
             <el-col :span="1"
                     style="background-color:#34495e;
-                                                                                                                     color:#ecf0f1; text-align:right;
-                                                                                                                     padding-right:4px;">{{index}}</el-col>
+                                                                                                                                                                                   color:#ecf0f1; text-align:right;
+                                                                                                                                                                                   padding-right:4px;">{{index}}</el-col>
             <el-col :span="23"
                     style="padding-left:8px;color:#ecf0f1;"
                     v-html="line"></el-col>
@@ -25,7 +25,8 @@
         </div>
       </el-col>
       <el-col :span="12">
-        <p v-for="(prop,value,index) in symbols">
+        <p v-if="symbols"
+           v-for="(prop,value,index) in symbols">
           {{prop}} - {{value}} - {{index}}
         </p>
       </el-col>
@@ -41,6 +42,7 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       fileContent: '',
+      fileLineList: [],
       file: '',
       symbols: {},
       htmlTemp: '',
@@ -52,13 +54,6 @@ export default {
   filters: {
   },
   computed: {
-    fileLineList: function () {
-      if (this.fileContent === '') return ''
-      // let self = this
-      let fileContentByLine = this.fileContent.split('\n')
-      // let newLineList = self.fileContentByLine.map(self.syntaxRegx)
-      return fileContentByLine
-    }
   },
   methods: {
     onFileChange: function (e) {
@@ -74,12 +69,27 @@ export default {
       reader.onload = function (e) {
         let contents = e.target.result
         self.fileContent = contents
+        self.fileLineList = contents.split('\n')
       }
       reader.readAsText(self.file)
+    },
+    filters: function () {
+      function isBigEnough(value) {
+        return value >= 10
+      }
+
+      var filtered = [12, 5, 8, 130, 44].filter(isBigEnough)
+      console.log(filtered)
     },
     processSymbols: function () {
       let self = this
       let allFileLines = self.fileLineList
+      let newSymbol = {}
+      allFileLines = allFileLines.filter(
+        value => {
+          return value !== ''
+        }
+      )
       allFileLines.forEach(
         (line, index) => {
           if (!line) {
@@ -93,23 +103,11 @@ export default {
                 return value !== ''
               }
             )
-            self.symbols[insList[0]] = index
+            newSymbol[insList[0]] = index
           }
-          // insList = line.replace(',', ' ').replace(':', ' ')
-          // insList = insList.split(' ')
-          // if (insList) {
-          //   for (let wordIndex in insList) {
-          //     let word = insList[wordIndex]
-          //     if (!word || parseInt(word) ||
-          //       word.includes('$') || self.wordIsIns(word)) {
-          //       continue
-          //     }
-          //     self.symbols[word] = index
-          //   }
-          //   console.log(line)
-          // }
         }
       )
+      self.symbols = newSymbol
     },
     wordIsIns: function (word) {
       let allIns = constants.instructions
