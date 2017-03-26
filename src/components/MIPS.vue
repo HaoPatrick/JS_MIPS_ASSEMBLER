@@ -7,6 +7,9 @@
     <input type="button"
            @click="processSymbols"
            value="symbols">
+    <input type="button"
+           @click="replaceWithIns"
+           value="replace">
     <el-row>
       <el-col :span="12">
         <div v-if="fileLineList"
@@ -16,8 +19,8 @@
                   :key="index">
             <el-col :span="1"
                     style="background-color:#34495e;
-                                                                                                                                                                                   color:#ecf0f1; text-align:right;
-                                                                                                                                                                                   padding-right:4px;">{{index}}</el-col>
+                                                                                                                                                                                                                                                                                                                                                                                                 color:#ecf0f1; text-align:right;
+                                                                                                                                                                                                                                                                                                                                                                                                 padding-right:4px;">{{index}}</el-col>
             <el-col :span="23"
                     style="padding-left:8px;color:#ecf0f1;"
                     v-html="line"></el-col>
@@ -29,6 +32,7 @@
            v-for="(prop,value,index) in symbols">
           {{prop}} - {{value}} - {{index}}
         </p>
+        <p v-for="line in assembleCode">{{line}}</p>
       </el-col>
     </el-row>
   </div>
@@ -43,6 +47,8 @@ export default {
       msg: 'Welcome to Your Vue.js App',
       fileContent: '',
       fileLineList: [],
+      validLines: [],
+      assembleCode: [],
       file: '',
       symbols: {},
       htmlTemp: '',
@@ -70,26 +76,18 @@ export default {
         let contents = e.target.result
         self.fileContent = contents
         self.fileLineList = contents.split('\n')
+        self.validLines = self.fileLineList.filter(
+          value => {
+            return value !== '' && value !== '\r'
+          }
+        )
       }
       reader.readAsText(self.file)
     },
-    filters: function () {
-      function isBigEnough(value) {
-        return value >= 10
-      }
-
-      var filtered = [12, 5, 8, 130, 44].filter(isBigEnough)
-      console.log(filtered)
-    },
     processSymbols: function () {
       let self = this
-      let allFileLines = self.fileLineList
+      let allFileLines = self.validLines
       let newSymbol = {}
-      allFileLines = allFileLines.filter(
-        value => {
-          return value !== ''
-        }
-      )
       allFileLines.forEach(
         (line, index) => {
           if (!line) {
@@ -104,16 +102,73 @@ export default {
               }
             )
             newSymbol[insList[0]] = index
+            // newSymbol.push({ key: insList[0], value: index })
           }
         }
       )
       self.symbols = newSymbol
     },
+    replaceWithIns: function () {
+      let self = this
+      let allFileLines = self.validLines
+      allFileLines.forEach(
+        (line, index) => {
+          if (!line) {
+            return
+          }
+          if (line.includes(':')) {
+            return
+          }
+          let insList = line.replace(/,/g, ' ').split(' ')
+          let hasPostOperand = false
+          let resultAssembleLine = ''
+          for (let wordIndex in insList) {
+            let currentWord = insList[wordIndex].trim()
+            if (!currentWord) continue
+
+            let instrc = self.wordIsIns(currentWord)
+            if (instrc) {
+              if (instrc.code1) {
+                hasPostOperand = instrc.code1.toString(2)
+              }
+              resultAssembleLine += instrc.code.toString(2)
+              continue
+            }
+            if (currentWord.includes('$')) {
+              if (/^(-|\+)?([0-9]+|Infinity)$/.test(constants.register[currentWord])) {
+                resultAssembleLine += constants.register[currentWord]
+                continue
+              }
+            }
+            if (/^(-|\+)?([0-9]+|Infinity)$/.test(currentWord)) {
+              resultAssembleLine += parseInt(currentWord)
+              continue
+            }
+            if (self.symbols[currentWord]) {
+              resultAssembleLine += self.symbols[currentWord]
+              continue
+            }
+
+            // if(/^()/)
+            if (/[0-9]+\(\$\w+\)/.test(currentWord)) {
+              // console.log('get' + currentWord)
+              continue
+            }
+            if (currentWord.includes('#')) {
+              break
+            }
+            console.log(currentWord)
+          }
+          if (hasPostOperand) resultAssembleLine += hasPostOperand
+          self.assembleCode.push(resultAssembleLine)
+        }
+      )
+    },
     wordIsIns: function (word) {
       let allIns = constants.instructions
       for (let index in allIns) {
         if (allIns[index].ins === word) {
-          return true
+          return allIns[index]
         }
       }
       return false
@@ -144,7 +199,7 @@ export default {
         if (valueList[i].includes('//')) {
           result += ('<span style="color: #bdc3c7">' + valueList[i] + '</span>')
         } else if (valueList[i].includes('.')) {
-          console.log(valueList[i])
+          // console.log(valueList[i])
           result += ('<span style="color: #27ae60">' + valueList[i] + '</span>')
         } else if (valueList[i].includes('$') || valueList[i].includes('x')) {
           result += ('<span style="color: #e67e22">' + valueList[i] + '</span>')
