@@ -19,15 +19,15 @@
                   :key="index">
             <el-col :span="1"
                     style="background-color:#34495e;
-                                                                                                                                                                                                                                                                                                                                                                                                 color:#ecf0f1; text-align:right;
-                                                                                                                                                                                                                                                                                                                                                                                                 padding-right:4px;">{{index}}</el-col>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                               color:#ecf0f1; text-align:right;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                               padding-right:4px;">{{index}}</el-col>
             <el-col :span="23"
                     style="padding-left:8px;color:#ecf0f1;"
                     v-html="line"></el-col>
           </el-row>
         </div>
       </el-col>
-      <el-col :span="12">
+      <el-col style="font-family:consolas" :span="12">
         <p v-if="symbols"
            v-for="(prop,value,index) in symbols">
           {{prop}} - {{value}} - {{index}}
@@ -129,19 +129,19 @@ export default {
             let instrc = self.wordIsIns(currentWord)
             if (instrc) {
               if (instrc.code1) {
-                hasPostOperand = instrc.code1.toString(2)
+                hasPostOperand = self.toBaseTwo(instrc.code1, 16, 6)
               }
-              resultAssembleLine += instrc.code.toString(2)
+              resultAssembleLine += self.toBaseTwo(instrc.code, 16, 6)
               continue
             }
             if (currentWord.includes('$')) {
               if (/^(-|\+)?([0-9]+|Infinity)$/.test(constants.register[currentWord])) {
-                resultAssembleLine += constants.register[currentWord]
+                resultAssembleLine += self.toBaseTwo(constants.register[currentWord], 10, 5)
                 continue
               }
             }
             if (/^(-|\+)?([0-9]+|Infinity)$/.test(currentWord)) {
-              resultAssembleLine += parseInt(currentWord)
+              resultAssembleLine += self.toBaseTwo(currentWord, 10, 16)
               continue
             }
             if (self.symbols[currentWord]) {
@@ -151,7 +151,17 @@ export default {
 
             // if(/^()/)
             if (/[0-9]+\(\$\w+\)/.test(currentWord)) {
-              // console.log('get' + currentWord)
+              let tempRex = '([0-9]+)\\((\\$\\w+)\\)'
+              tempRex = new RegExp(tempRex)
+              let resultList = tempRex.exec(currentWord)
+              let offset = resultList[1]
+              let rt = resultList[2]
+              offset = self.toBaseTwo(offset, 10, 16)
+              rt = constants.register[rt]
+              rt = self.toBaseTwo(rt, 10, 5)
+              console.log(rt + ' ' + offset)
+              hasPostOperand = offset
+              resultAssembleLine += rt
               continue
             }
             if (currentWord.includes('#')) {
@@ -163,6 +173,24 @@ export default {
           self.assembleCode.push(resultAssembleLine)
         }
       )
+    },
+    toBaseTwo: function (value, originBase, targetLength) {
+      let baseTen = parseInt(value, originBase)
+      let baseTwo = (baseTen >>> 0).toString(2)
+      let result = ''
+      if (baseTwo.length < targetLength) {
+        for (let i = 0; i < (targetLength - baseTwo.length); i++) {
+          result += '0'
+        }
+        result += baseTwo
+        return result
+      }
+      if (baseTwo.length > targetLength) {
+        result = baseTwo.slice(-1 * targetLength)
+        return result
+      }
+      result = baseTwo
+      return result
     },
     wordIsIns: function (word) {
       let allIns = constants.instructions

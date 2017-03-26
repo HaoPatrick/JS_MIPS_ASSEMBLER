@@ -90,7 +90,7 @@ let instructions = [
 let register = {}
 allRegisters.forEach(
   (element, index) => {
-    register[element] = index.toString(2)
+    register[element] = index
     // console.log(element)
   }
 )
