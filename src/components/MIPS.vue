@@ -10,6 +10,9 @@
     <input type="button"
            @click="replaceWithIns"
            value="replace">
+    <input type="button"
+           @click="aNewOne"
+           value="test">
     <el-row>
       <el-col :span="12">
         <div v-if="fileLineList"
@@ -19,15 +22,16 @@
                   :key="index">
             <el-col :span="1"
                     style="background-color:#34495e;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                               color:#ecf0f1; text-align:right;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                               padding-right:4px;">{{index}}</el-col>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   color:#ecf0f1; text-align:right;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   padding-right:4px;">{{index}}</el-col>
             <el-col :span="23"
                     style="padding-left:8px;color:#ecf0f1;"
                     v-html="line"></el-col>
           </el-row>
         </div>
       </el-col>
-      <el-col style="font-family:consolas" :span="12">
+      <el-col style="font-family:consolas"
+              :span="12">
         <p v-if="symbols"
            v-for="(prop,value,index) in symbols">
           {{prop}} - {{value}} - {{index}}
@@ -40,6 +44,7 @@
 
 <script>
 import constants from '../assets/instructions.js'
+import assemble from '../assets/assemble.js'
 export default {
   name: 'hello',
   data() {
@@ -171,6 +176,27 @@ export default {
           }
           if (hasPostOperand) resultAssembleLine += hasPostOperand
           self.assembleCode.push(resultAssembleLine)
+        }
+      )
+    },
+    aNewOne: function () {
+      let self = this
+      let allFileLines = self.validLines
+      allFileLines.forEach(
+        (line, index) => {
+          if (line.match(':')) {
+            let tempLine = line.trim().split(':')
+            if (line.length === 2) {
+              self.symbols[tempLine[0]] = index
+            }
+            continue
+          }
+          let lineTokens = assemble.tokenize(line)
+          if (!lineTokens) continue
+          if (lineTokens.operation.type === 'M') {
+            
+          }
+          console.log(lineTokens)
         }
       )
     },
