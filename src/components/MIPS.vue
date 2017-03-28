@@ -10,7 +10,7 @@
            type="file">
     <el-button size="small"
                @click="aNewOne"
-               type="success">开始汇编</el-button>
+               type="success">传授经验</el-button>
   
     <el-row style="margin-top:10px"
             :gutter="10">
@@ -278,7 +278,7 @@ input[type="file"] {
   border: 1px solid #2980b9;
   display: inline-block;
   padding: 2px 6px 4px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #2980b9;
   border-radius: 5px;
   cursor: pointer;
