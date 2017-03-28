@@ -22,8 +22,8 @@
                   :key="index">
             <el-col :span="1"
                     style="background-color:#34495e;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   color:#ecf0f1; text-align:right;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   padding-right:4px;">{{index}}</el-col>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   color:#ecf0f1; text-align:right;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   padding-right:4px;">{{index}}</el-col>
             <el-col :span="23"
                     style="padding-left:8px;color:#ecf0f1;"
                     v-html="line"></el-col>
@@ -44,7 +44,7 @@
 
 <script>
 import constants from '../assets/instructions.js'
-import assemble from '../assets/assemble.js'
+import { assemble } from '../assets/temp.js'
 export default {
   name: 'hello',
   data() {
@@ -182,23 +182,14 @@ export default {
     aNewOne: function () {
       let self = this
       let allFileLines = self.validLines
-      allFileLines.forEach(
-        (line, index) => {
-          if (line.match(':')) {
-            let tempLine = line.trim().split(':')
-            if (line.length === 2) {
-              self.symbols[tempLine[0]] = index
-            }
-            continue
-          }
-          let lineTokens = assemble.tokenize(line)
-          if (!lineTokens) continue
-          if (lineTokens.operation.type === 'M') {
-            
-          }
-          console.log(lineTokens)
+      let result = assemble(allFileLines)
+      self.assembleCode = result.map(
+        value => {
+          return value.instruction.code
         }
       )
+      console.log(self.assembleCode)
+      // console.log(result)
     },
     toBaseTwo: function (value, originBase, targetLength) {
       let baseTen = parseInt(value, originBase)
