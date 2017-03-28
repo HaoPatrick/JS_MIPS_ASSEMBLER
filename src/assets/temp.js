@@ -752,6 +752,25 @@ function handleInstructionJ(operation, data) {
   }
 }
 
+function toBaseTwo(value, targetLength) {
+  let baseTen = parseInt(value, 10)
+  let baseTwo = (baseTen >>> 0).toString(2)
+  let result = ''
+  if (baseTwo.length < targetLength) {
+    for (let i = 0; i < (targetLength - baseTwo.length); i++) {
+      result += '0'
+    }
+    result += baseTwo
+    return result
+  }
+  if (baseTwo.length > targetLength) {
+    result = baseTwo.slice(-1 * targetLength)
+    return result
+  }
+  result = baseTwo
+  return result
+}
+
 function handleInstructionI(operation, data) {
   let opcode = operation.op
   let format = operation.format
@@ -771,7 +790,7 @@ function handleInstructionI(operation, data) {
 
         res = res + leftpad(translateRegister(rs).toString(2), 5)
         res = res + leftpad(translateRegister(rt).toString(2), 5)
-        res = res + leftpad(parseInt(imm).toString(2), 16)
+        res = res + toBaseTwo(imm, 16)
 
         console.log(res)
         break
@@ -780,7 +799,7 @@ function handleInstructionI(operation, data) {
         imm = data[1]
 
         res = res + leftpad(translateRegister(rs).toString(2), 5)
-        res = res + leftpad(parseInt(imm).toString(2), 21)
+        res = res + toBaseTwo(imm, 21)
 
         break
       case 'rt/imm/rs':
@@ -791,7 +810,7 @@ function handleInstructionI(operation, data) {
 
         res = res + leftpad(translateRegister(rs).toString(2), 5)
         res = res + leftpad(translateRegister(rt).toString(2), 5)
-        res = res + leftpad(parseInt(imm).toString(2), 16)
+        res = res + toBaseTwo(imm, 16)
 
         break
       case 'rs/label':
@@ -819,7 +838,7 @@ function handleInstructionI(operation, data) {
         imm = data[1]
 
         res = res + leftpad(translateRegister(rt).toString(2), 10)
-        res = res + leftpad(parseInt(imm).toString(2), 16)
+        res = res + toBaseTwo(imm, 16)
 
         break
     }
@@ -882,7 +901,7 @@ function handleInstructionR(operation, data) {
 
         res = res + leftpad(translateRegister(rt).toString(2), 10)
         res = res + leftpad(translateRegister(rd).toString(2), 5)
-        res = res + leftpad(parseInt(sa).toString(2), 5)
+        res = res + toBaseTwo(sa, 5)
         res = res + leftpad(func.toString(2), 6)
         break
       case 'rd/rt/rs':
