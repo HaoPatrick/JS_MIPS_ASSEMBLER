@@ -13,7 +13,7 @@
     <input type="button"
            @click="aNewOne"
            value="test">
-    <el-row>
+    <el-row :gutter="10">
       <el-col :span="12">
         <div v-if="fileLineList"
              style="font-family:consolas">
@@ -22,8 +22,8 @@
                   :key="index">
             <el-col :span="1"
                     style="background-color:#34495e;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   color:#ecf0f1; text-align:right;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   padding-right:4px;">{{index}}</el-col>
+                          color:#ecf0f1; text-align:right;
+                          padding-right:4px;">{{index}}</el-col>
             <el-col :span="23"
                     style="padding-left:8px;color:#ecf0f1;"
                     v-html="line"></el-col>
@@ -32,11 +32,17 @@
       </el-col>
       <el-col style="font-family:consolas"
               :span="12">
-        <p v-if="symbols"
-           v-for="(prop,value,index) in symbols">
-          {{prop}} - {{value}} - {{index}}
-        </p>
-        <p v-for="line in assembleCode">{{line}}</p>
+        <el-row v-for="(line, index)  in assembleCode"
+                style="background-color:#3f556b"
+                :key="index">
+          <el-col :span="1"
+                  style="background-color:#34495e;
+                          color:#ecf0f1; text-align:right;
+                          padding-right:4px;">{{index}}</el-col>
+          <el-col :span="23"
+                  style="padding-left:8px;color:#ecf0f1;"
+                  v-html="line"></el-col>
+        </el-row>
       </el-col>
     </el-row>
   </div>
@@ -189,7 +195,7 @@ export default {
         }
       )
       console.log(self.assembleCode)
-      // console.log(result)
+      console.log(result)
     },
     toBaseTwo: function (value, originBase, targetLength) {
       let baseTen = parseInt(value, originBase)
