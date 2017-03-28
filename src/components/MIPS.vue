@@ -1,19 +1,19 @@
 <template>
   <div class="hello">
+    <label for="file-upload"
+           class="custom-file-upload">
+      <i class="fa fa-cloud-upload"></i>打开一个
+    </label>
     <input id="file-upload"
            @change="onFileChange"
            accept="*"
            type="file">
-    <input type="button"
-           @click="processSymbols"
-           value="symbols">
-    <input type="button"
-           @click="replaceWithIns"
-           value="replace">
-    <input type="button"
-           @click="aNewOne"
-           value="test">
-    <el-row :gutter="10">
+    <el-button size="small"
+               @click="aNewOne"
+               type="success">开始汇编</el-button>
+  
+    <el-row style="margin-top:10px"
+            :gutter="10">
       <el-col :span="12">
         <div v-if="fileLineList"
              style="font-family:consolas">
@@ -22,8 +22,8 @@
                   :key="index">
             <el-col :span="1"
                     style="background-color:#34495e;
-                          color:#ecf0f1; text-align:right;
-                          padding-right:4px;">{{index}}</el-col>
+                                              color:#ecf0f1; text-align:right;
+                                              padding-right:4px;">{{index}}</el-col>
             <el-col :span="23"
                     style="padding-left:8px;color:#ecf0f1;"
                     v-html="line"></el-col>
@@ -37,8 +37,8 @@
                 :key="index">
           <el-col :span="1"
                   style="background-color:#34495e;
-                          color:#ecf0f1; text-align:right;
-                          padding-right:4px;">{{index}}</el-col>
+                                              color:#ecf0f1; text-align:right;
+                                              padding-right:4px;">{{index}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
@@ -270,5 +270,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+input[type="file"] {
+  display: none;
+}
 
+.custom-file-upload {
+  border: 1px solid #2980b9;
+  display: inline-block;
+  padding: 2px 6px 4px;
+  font-size: 0.9rem;
+  color: #2980b9;
+  border-radius: 5px;
+  cursor: pointer;
+}
 </style>
