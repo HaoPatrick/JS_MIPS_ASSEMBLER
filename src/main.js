@@ -9,7 +9,6 @@ import VueCodeMirror from 'vue-codemirror'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.use(VueCodeMirror)
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
