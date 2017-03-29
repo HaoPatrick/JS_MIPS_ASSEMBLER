@@ -15,20 +15,9 @@
     <el-row style="margin-top:10px"
             :gutter="10">
       <el-col :span="12">
-        <div v-if="fileLineList"
-             style="font-family:consolas">
-          <el-row v-for="(line, index)  in fileLineList"
-                  style="background-color:#3f556b"
-                  :key="index">
-            <el-col :span="1"
-                    style="background-color:#34495e;
-                                                                                    color:#ecf0f1; text-align:right;
-                                                                                    padding-right:4px;">{{index}}</el-col>
-            <el-col :span="23"
-                    style="padding-left:8px;color:#ecf0f1;"
-                    v-html="line"></el-col>
-          </el-row>
-        </div>
+        <codemirror :code="fileContent"
+                    :options="editorOption"
+                    @changed="codeChange"></codemirror>
       </el-col>
       <el-col style="font-family:consolas"
               :span="12">
@@ -37,18 +26,13 @@
                 :key="index">
           <el-col :span="1"
                   style="background-color:#34495e;
-                                                                                    color:#ecf0f1; text-align:right;
-                                                                                    padding-right:4px;">{{index}}</el-col>
+                                                                                      color:#ecf0f1; text-align:right;
+                                                                                      padding-right:4px;">{{index}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
         </el-row>
       </el-col>
-    </el-row>
-    <el-row>
-      <codemirror :code="fileContent"
-                  :options="editorOption"
-                  @changed="codeChange"></codemirror>
     </el-row>
   </div>
 </template>
