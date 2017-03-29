@@ -5,8 +5,10 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
+import VueCodeMirror from 'vue-codemirror'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
+Vue.use(VueCodeMirror)
 
 /* eslint-disable no-new */
 new Vue({

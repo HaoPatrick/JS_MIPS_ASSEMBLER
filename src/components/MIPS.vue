@@ -22,8 +22,8 @@
                   :key="index">
             <el-col :span="1"
                     style="background-color:#34495e;
-                                              color:#ecf0f1; text-align:right;
-                                              padding-right:4px;">{{index}}</el-col>
+                                                                      color:#ecf0f1; text-align:right;
+                                                                      padding-right:4px;">{{index}}</el-col>
             <el-col :span="23"
                     style="padding-left:8px;color:#ecf0f1;"
                     v-html="line"></el-col>
@@ -37,13 +37,18 @@
                 :key="index">
           <el-col :span="1"
                   style="background-color:#34495e;
-                                              color:#ecf0f1; text-align:right;
-                                              padding-right:4px;">{{index}}</el-col>
+                                                                      color:#ecf0f1; text-align:right;
+                                                                      padding-right:4px;">{{index}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
         </el-row>
       </el-col>
+    </el-row>
+    <el-row>
+      <codemirror :code="fileContent"
+                  :options="editorOption"
+                  @changed="codeChange"></codemirror>
     </el-row>
   </div>
 </template>
@@ -51,6 +56,15 @@
 <script>
 import constants from '../assets/instructions.js'
 import { assemble } from '../assets/temp.js'
+import { codemirror } from 'vue-codemirror'
+require('codemirror/mode/gas/gas.js')
+require('codemirror/addon/selection/active-line.js')
+require('codemirror/addon/scroll/annotatescrollbar.js')
+require('codemirror/addon/search/matchesonscrollbar.js')
+require('codemirror/addon/search/searchcursor.js')
+require('codemirror/addon/search/match-highlighter.js')
+require('codemirror/addon/selection/mark-selection.js')
+require('codemirror/addon/search/searchcursor.js')
 export default {
   name: 'hello',
   data() {
@@ -63,16 +77,33 @@ export default {
       file: '',
       symbols: {},
       htmlTemp: '',
+      editorOption: {
+        tabSize: 4,
+        styleActiveLine: true,
+        line: true,
+        mode: 'gas',
+        lineWrapping: true,
+        theme: 'monokai'
+      },
       instructRegx: '(\\s*)?(\\w+)(\\s+)(\\$\\w+)(\\s*)?(,)(\\s*)?(\\$\\w+)(\\s*)?(,)(\\s*)?(\\$\\w+)(\\s*)?(\\s*)(\\/\\/.*)?',
       commentRegx: '(\\s*)(\\#.*)',
       labelRegx: '(\\s*)(\\.\\w+)(\\s+)(\\w+)(\\s*)(\\/\\/.*)?'
     }
   },
+  components: {
+    codemirror
+  },
   filters: {
   },
   computed: {
+    editor() {
+      return this.$refs.codeEditor.editor
+    }
   },
   methods: {
+    codeChange: function (code) {
+      this.fileLineList = code
+    },
     onFileChange: function (e) {
       let self = this
       let files = e.target.files || e.dataTransfer.files
