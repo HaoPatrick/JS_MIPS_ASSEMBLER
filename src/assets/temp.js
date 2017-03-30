@@ -1,7 +1,7 @@
 let baseAddr = 0
-let dataAddr = 0
 let curAddr = 0
 let addrPointer = 0
+let dataAddr = 0
 let labelTable = {}
 let parseMode = 'instruction'
 let memory = []
@@ -571,7 +571,7 @@ export function assemble(content) {
       line = line.split(':')
       if (line.length === 2) {
         let label = line[0]
-        console.log(label)
+
         labelTable[label] = curAddr
       } else {
       }
@@ -585,7 +585,7 @@ export function assemble(content) {
       line = line.split(':')
       if (line.length === 2) {
         let label = line[0]
-        console.log(label)
+
         labelTable[label] = curAddr
       } else {
       }
@@ -604,7 +604,6 @@ export function assemble(content) {
         }
       }
     } else {
-      console.log('pusAddr' + curAddr)
       memory.push({
         addr: curAddr,
         instruction: translate(token.operation, token.data),
@@ -650,10 +649,7 @@ function tokenize(line) {
   let op = instructionArray[0].trim()
   let data = instructionArray.slice(1)
 
-  console.log(op, '|', data)
-
   let operation = getStrategy(op)
-
   return {
     'op': op,
     'marker': true,
@@ -704,9 +700,7 @@ function translateRegister(reg) {
     '$fp': 30,
     '$ra': 31
   }
-
   try {
-    console.log(registers[reg])
     return registers[reg]
   } catch (e) {
     throw new Error('Illegal Register')
@@ -732,7 +726,6 @@ function translate(operation, data) {
 
   try {
     res.code = handleInstruction[type](operation, data)
-    console.log(res)
   } catch (e) {
     console.error(e)
   }
@@ -743,7 +736,7 @@ function translate(operation, data) {
 function handleInstructionJ(operation, data) {
   let opcode = operation.op
   let res = leftpad(opcode.toString(2), 6)
-  console.log(labelToAddress(data))
+
   if (labelToAddress(data) !== -1) {
     res = res + leftpad(labelToAddress(data).toString(2).slice(0, -2), 26)
     return res
@@ -778,8 +771,6 @@ function handleInstructionI(operation, data) {
 
   let res = leftpad(opcode.toString(2), 6)
 
-  console.log(opcode, format, data)
-
   let rt, rs, imm, label
   try {
     switch (format) {
@@ -792,7 +783,6 @@ function handleInstructionI(operation, data) {
         res = res + leftpad(translateRegister(rt).toString(2), 5)
         res = res + toBaseTwo(imm, 16)
 
-        console.log(res)
         break
       case 'rs/imm':
         rs = data[0]
@@ -845,9 +835,6 @@ function handleInstructionI(operation, data) {
   } catch (e) {
     console.error(e)
   }
-
-  console.log(res)
-
   return res
 }
 
@@ -856,9 +843,6 @@ function handleInstructionR(operation, data) {
   let func = operation.func
   let format = operation.format
   let res = leftpad(opcode.toString(2), 6)
-
-  console.log(res)
-
   let rt, rs, rd, sa
 
   try {
@@ -918,14 +902,10 @@ function handleInstructionR(operation, data) {
   } catch (e) {
     console.error(e)
   }
-
-  console.log(res)
-
   return res
 }
 
 function handleInstructionM(opcode, format, data) {
-  console.log(data)
   if (opcode === 'data') {
     dataAddr = parseInt(data, 16)
     parseMode = 'data'
@@ -933,7 +913,6 @@ function handleInstructionM(opcode, format, data) {
     baseAddr = parseInt(data, 16)
     parseMode = 'instruction'
     addrPointer = baseAddr
-    console.log(addrPointer, dataAddr, parseMode)
   } else {
     throw new Error('Undefined marker')
   }
@@ -941,5 +920,7 @@ function handleInstructionM(opcode, format, data) {
 }
 
 function handleInstructionE(opcode, format, data) {
-
+  console.log(addrPointer)
+  console.log(parseMode)
+  console.log(dataAddr)
 }

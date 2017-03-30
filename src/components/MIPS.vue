@@ -4,41 +4,52 @@
            class="custom-file-upload">
       <i class="fa fa-cloud-upload"></i>打开一个
     </label>
+    <el-select @change="changeOption"
+               v-model="currOption"
+               placeholder="Select">
+      <el-option v-for="item in options"
+                 :label="item.label"
+                 :value="item.value">
+      </el-option>
+    </el-select>
     <input id="file-upload"
            @change="onFileChange"
            accept="*"
            type="file">
     <el-button size="small"
-               @click="aNewOne"
+               @click="compile"
                type="success">传授经验</el-button>
     <el-row style="margin-top:10px"
             :gutter="10">
-      <el-col :span="12"
+      <el-col :span="7"
               style="height:36rem;overflow:auto">
         <codemirror :code="fileContent"
                     :options="editorOption"
                     @change="codeChange"></codemirror>
       </el-col>
-      <el-col :span="12"
+      <el-col :span="7"
               style="height:36rem;overflow:auto;font-family:consolas">
         <el-row v-for="(line, index)  in assembleCode"
                 style="background-color:#3f556b"
                 :key="index">
           <el-col :span="1"
                   style="background-color:#34495e;
-                                                                                  color:#ecf0f1; text-align:right;
-                                                                                   padding-right:4px;">{{index}}</el-col>
+                                                                                                                                                                                                                color:#ecf0f1; text-align:right;
+                                                                                                                                                                                                                 padding-right:4px;">{{index}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
         </el-row>
       </el-col>
+      <el-col :span="7">
+        <el-button type="danger">Debug</el-button>
+      </el-col>
     </el-row>
     <el-row style="margin-top:0.7rem">
       <el-col :span="24"
-              style="font-family:consolas;min-height:12rem;color:#fefefe;overflow:auto;background-color:#000">
+              style="padding:5px; font-family:consolas;min-height:12rem;color:#fefefe;overflow:auto;background-color:rgb(38,50,56)">
         Console:
-        <p style="margin-top:0;margin-bottom:0"
+        <p style=" margin-top:0;margin-bottom:0;"
            v-for="line in consoleOutput">
           {{line}}
         </p>
@@ -75,6 +86,12 @@ export default {
         lineWrapping: true,
         theme: 'material'
       },
+      options: [
+        { label: 'Binary', value: 0 },
+        { label: 'Debug', value: 1 },
+        { label: 'Coe', value: 2 }
+      ],
+      currOption: 0,
       instructRegx: '(\\s*)?(\\w+)(\\s+)(\\$\\w+)(\\s*)?(,)(\\s*)?(\\$\\w+)(\\s*)?(,)(\\s*)?(\\$\\w+)(\\s*)?(\\s*)(\\/\\/.*)?',
       commentRegx: '(\\s*)(\\#.*)',
       labelRegx: '(\\s*)(\\.\\w+)(\\s+)(\\w+)(\\s*)(\\/\\/.*)?'
@@ -94,13 +111,17 @@ export default {
     codeChange: function (code) {
       this.fileContent = code
     },
+    changeOption: function () {
+      let self = this
+      let currValue = self.options[self.currOption]
+      self.toOutput('Assemble mode switched to ' + currValue.label)
+    },
     toOutput: function (promote) {
       let self = this
       let dateString = new Date()
       dateString = dateString.getHours().toString() + ':' + dateString.getMinutes().toString() + ':' + dateString.getSeconds().toString()
       let withDate = dateString + ' - ' + promote
       self.consoleOutput.push(withDate)
-      // console.log(self.consoleOutput)
     },
     onFileChange: function (e) {
       let self = this
@@ -121,7 +142,7 @@ export default {
             return value !== '' && value !== '\r'
           }
         )
-        self.toOutput('Now load the file')
+        self.toOutput('Load the file')
       }
       reader.readAsText(self.file)
     },
@@ -215,24 +236,40 @@ export default {
         }
       )
     },
-    aNewOne: function () {
+    compile: function () {
       let self = this
-      // self.fileLineList = self.fileContent.replace(/\r/g, ' ').split('/n')
-      // self.validLines = self.fileLineList.filter(line => {
-      //   return line
-      // })
       let allFileLines = self.fileContent.replace(/\r/g, ' ').split('\n').filter(line => {
         return line
       })
-      self.toOutput('Now assemble the source code')
+      self.toOutput('Assemble the source code')
       let result = assemble(allFileLines)
-      self.assembleCode = result.map(
+      result = result.map(
         value => {
           return value.instruction.code
         }
       )
-      console.log(self.assembleCode)
-      console.log(result)
+      if (self.currOption === 0) {
+        self.assembleCode = result
+        return
+      } else if (self.currOption === 1) {
+        self.assembleCode = result.map((value, line) => {
+          console.log(line, value)
+          let hexString = (line * 4).toString(16)
+          while (hexString.length < 8) {
+            hexString = '0' + hexString
+          }
+          return hexString + ': ' + value
+        })
+      } else if (self.currOption === 2) {
+        let coeResult = []
+        coeResult.push('memory_initialization_radix=16;')
+        coeResult.push('memory_initialization_vector=')
+        result.map(value => {
+          let bin2hex = value.match(/.{4}/g).map(value => { return parseInt(value, 2).toString(16) }).join('') + ';'
+          coeResult.push(bin2hex)
+        })
+        self.assembleCode = coeResult
+      }
     },
     toBaseTwo: function (value, originBase, targetLength) {
       let baseTen = parseInt(value, originBase)
@@ -260,46 +297,6 @@ export default {
         }
       }
       return false
-    },
-    syntaxRegx: function (line) {
-      // let self = this
-      // let insRegx = new RegExp(self.instructRegx)
-      // let commRegx = new RegExp(self.commentRegx)
-      // let labelRegx = new RegExp(self.labelRegx)
-      // let stringList = insRegx.exec(line)
-      // let commList = commRegx.exec(line)
-      // // let labelList = labelRegx.exec(line)
-      // if (stringList) {
-      //   return self.getSyntax(stringList)
-      // } else if (labelList) {
-      //   return self.getSyntax(labelList)
-      // } else if (commList) {
-      //   return self.getSyntax(commList)
-      // } else {
-      //   return line
-      // }
-      return line
-    },
-    getSyntax: function (valueList) {
-      let result = ''
-      for (let i = 1; i < valueList.length; i++) {
-        if (!valueList[i]) continue
-        if (valueList[i].includes('//')) {
-          result += ('<span style="color: #bdc3c7">' + valueList[i] + '</span>')
-        } else if (valueList[i].includes('.')) {
-          // console.log(valueList[i])
-          result += ('<span style="color: #27ae60">' + valueList[i] + '</span>')
-        } else if (valueList[i].includes('$') || valueList[i].includes('x')) {
-          result += ('<span style="color: #e67e22">' + valueList[i] + '</span>')
-        } else if (valueList[i].includes('x')) {
-          result += ('<span style="color: #2980b9">' + valueList[i] + '</span>')
-        } else if (valueList[i].includes(',') || valueList[i].includes(';')) {
-          result += ('<span style="color: #8e44ad">' + valueList[i] + '</span>')
-        } else {
-          result += ('<span style="color: #27ae60">' + valueList[i] + '</span>')
-        }
-      }
-      return result
     }
   }
 }
