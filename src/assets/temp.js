@@ -625,7 +625,7 @@ export function assemble(content) {
   return memory
 }
 
-function tokenize(line) {
+export function tokenize(line) {
   if (line === '') {
     return false
   }

@@ -8,6 +8,7 @@
                v-model="currOption"
                placeholder="Select">
       <el-option v-for="item in options"
+                 :key="item.id"
                  :label="item.label"
                  :value="item.value">
       </el-option>
@@ -30,22 +31,42 @@
       <el-col :span="7"
               style="height:36rem;overflow:auto;font-family:consolas">
         <el-row v-for="(line, index)  in assembleCode"
-                style="background-color:#3f556b"
+                style="background-color:rgb(38,50,56);"
                 :key="index">
           <el-col :span="1"
-                  style="background-color:#34495e;
-                                                                                                                                                                                                                color:#ecf0f1; text-align:right;
-                                                                                                                                                                                                                 padding-right:4px;">{{index}}</el-col>
+                  style=" color:rgb(73, 122, 99); text-align:right;padding-right:2px;">{{index}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
         </el-row>
       </el-col>
       <el-col :span="7">
-        <el-button type="danger">Debug</el-button>
+        <el-button type="danger"
+                   @click="debug">Debug</el-button>
+        <el-tabs v-model="activeTab">
+          <el-tab-pane label="User"
+                       name="first">
+            <el-table :data="regData">
+              <el-table-column prop="regName"
+                               label="寄存器">
+              </el-table-column>
+              <el-table-column prop="regValue"
+                               label="值">
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="Config"
+                       name="second">Config</el-tab-pane>
+          <el-tab-pane label="Role"
+                       name="third">Role</el-tab-pane>
+          <el-tab-pane label="Task"
+                       name="Task">Task</el-tab-pane>
+  
+        </el-tabs>
+  
       </el-col>
     </el-row>
-    <el-row style="margin-top:0.7rem">
+    <el-row style="margin-top:0.7rem; background-color:rgb(38,50,56)">
       <el-col :span="24"
               style="padding:5px; font-family:consolas;min-height:12rem;color:#fefefe;overflow:auto;background-color:rgb(38,50,56)">
         Console:
@@ -61,6 +82,7 @@
 <script>
 import constants from '../assets/instructions.js'
 import { assemble } from '../assets/temp.js'
+import run from '../assets/run.js'
 import { codemirror } from 'vue-codemirror'
 
 require('codemirror/addon/selection/active-line.js')
@@ -91,6 +113,16 @@ export default {
         { label: 'Debug', value: 1 },
         { label: 'Coe', value: 2 }
       ],
+      regData: [
+        { regName: '$r1', regValue: 0 },
+        { regName: '$r2', regValue: 0 },
+        { regName: '$r3', regValue: 0 },
+        { regName: '$r4', regValue: 0 },
+        { regName: '$r5', regValue: 0 },
+        { regName: '$r6', regValue: 0 },
+        { regName: '$r7', regValue: 0 },
+        { regName: '$r8', regValue: 0 }
+      ],
       currOption: 0,
       instructRegx: '(\\s*)?(\\w+)(\\s+)(\\$\\w+)(\\s*)?(,)(\\s*)?(\\$\\w+)(\\s*)?(,)(\\s*)?(\\$\\w+)(\\s*)?(\\s*)(\\/\\/.*)?',
       commentRegx: '(\\s*)(\\#.*)',
@@ -110,6 +142,14 @@ export default {
   methods: {
     codeChange: function (code) {
       this.fileContent = code
+    },
+    debug: function () {
+      let self = this
+      let allLines = self.validLines
+      // run(allLines[1])
+      console.log(run)
+      console.log(allLines[1])
+      // console.log(run)
     },
     changeOption: function () {
       let self = this
@@ -164,7 +204,6 @@ export default {
               }
             )
             newSymbol[insList[0]] = index
-            // newSymbol.push({ key: insList[0], value: index })
           }
         }
       )
@@ -241,7 +280,7 @@ export default {
       let allFileLines = self.fileContent.replace(/\r/g, ' ').split('\n').filter(line => {
         return line
       })
-      self.toOutput('Assemble the source code')
+      self.toOutput('Source code => ' + self.options[self.currOption].label)
       let result = assemble(allFileLines)
       result = result.map(
         value => {
@@ -264,10 +303,11 @@ export default {
         let coeResult = []
         coeResult.push('memory_initialization_radix=16;')
         coeResult.push('memory_initialization_vector=')
-        result.map(value => {
-          let bin2hex = value.match(/.{4}/g).map(value => { return parseInt(value, 2).toString(16) }).join('') + ';'
-          coeResult.push(bin2hex)
-        })
+        let bin2hex = result.map(value => {
+          return value.match(/.{4}/g).map(value => { return parseInt(value, 2).toString(16) }).join('')
+        }).join(',')
+        bin2hex = bin2hex.slice(0, -1) + ';'
+        coeResult.push(bin2hex)
         self.assembleCode = coeResult
       }
     },
@@ -321,5 +361,18 @@ input[type="file"] {
   color: #2980b9;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.el-col::-webkit-scrollbar {
+  width: 0.4rem;
+}
+
+.el-col::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px #99A9BF;
+}
+
+.el-col::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
 }
 </style>
