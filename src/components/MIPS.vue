@@ -25,8 +25,8 @@
                 :key="index">
           <el-col :span="1"
                   style="background-color:#34495e;
-                    color:#ecf0f1; text-align:right;
-                     padding-right:4px;">{{index}}</el-col>
+                                    color:#ecf0f1; text-align:right;
+                                     padding-right:4px;">{{index}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
@@ -49,8 +49,8 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       fileContent: '',
-      // fileLineList: [],
-      // validLines: [],
+      fileLineList: [],
+      validLines: [],
       assembleCode: [],
       file: '',
       symbols: {},
@@ -76,21 +76,10 @@ export default {
   computed: {
     editor() {
       return this.$refs.codeEditor.editor
-    },
-    fileLineList: function () {
-      return this.fileContent.replace(/\r/g, '').split('\n')
-    },
-    validLines: function () {
-      return this.fileLineList.filter(
-        value => {
-          return value
-        }
-      )
     }
   },
   methods: {
     codeChange: function (code) {
-      console.log(code)
       this.fileContent = code
     },
     onFileChange: function (e) {
@@ -207,7 +196,14 @@ export default {
     },
     aNewOne: function () {
       let self = this
-      let allFileLines = self.validLines
+      // self.fileLineList = self.fileContent.replace(/\r/g, ' ').split('/n')
+      // self.validLines = self.fileLineList.filter(line => {
+      //   return line
+      // })
+      let allFileLines = self.fileContent.replace(/\r/g, ' ').split('\n').filter(line => {
+        return line
+      })
+      console.log(allFileLines)
       let result = assemble(allFileLines)
       self.assembleCode = result.map(
         value => {
