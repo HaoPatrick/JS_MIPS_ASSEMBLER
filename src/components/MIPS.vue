@@ -11,13 +11,12 @@
     <el-button size="small"
                @click="aNewOne"
                type="success">传授经验</el-button>
-  
     <el-row style="margin-top:10px"
             :gutter="10">
       <el-col :span="12">
         <codemirror :code="fileContent"
                     :options="editorOption"
-                    @changed="codeChange"></codemirror>
+                    @change="codeChange"></codemirror>
       </el-col>
       <el-col style="font-family:consolas"
               :span="12">
@@ -26,8 +25,8 @@
                 :key="index">
           <el-col :span="1"
                   style="background-color:#34495e;
-                                                                                            color:#ecf0f1; text-align:right;
-                                                                                            padding-right:4px;">{{index}}</el-col>
+                    color:#ecf0f1; text-align:right;
+                     padding-right:4px;">{{index}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
@@ -41,40 +40,9 @@
 import constants from '../assets/instructions.js'
 import { assemble } from '../assets/temp.js'
 import { codemirror } from 'vue-codemirror'
-// require('codemirror/addon/selection/active-line.js')
-// require active-line.js
+
 require('codemirror/addon/selection/active-line.js')
-// // styleSelectedText
-// require('codemirror/addon/selection/mark-selection.js')
-// require('codemirror/addon/search/searchcursor.js')
-// // hint
-// require('codemirror/addon/hint/show-hint.js')
-// require('codemirror/addon/hint/show-hint.css')
-// require('codemirror/addon/hint/javascript-hint.js')
-// require('codemirror/addon/selection/active-line.js')
-// // highlightSelectionMatches
-// require('codemirror/addon/scroll/annotatescrollbar.js')
-// require('codemirror/addon/search/matchesonscrollbar.js')
-// require('codemirror/addon/search/searchcursor.js')
-// require('codemirror/addon/search/match-highlighter.js')
-// // keyMap
-// require('codemirror/mode/clike/clike.js')
-// require('codemirror/addon/edit/matchbrackets.js')
-// require('codemirror/addon/comment/comment.js')
-// require('codemirror/addon/dialog/dialog.js')
-// require('codemirror/addon/dialog/dialog.css')
-// require('codemirror/addon/search/searchcursor.js')
-// require('codemirror/addon/search/search.js')
-// require('codemirror/keymap/sublime.js')
-// // foldGutter
-// require('codemirror/addon/fold/foldgutter.css')
-// require('codemirror/addon/fold/brace-fold.js')
-// require('codemirror/addon/fold/comment-fold.js')
-// require('codemirror/addon/fold/foldcode.js')
-// require('codemirror/addon/fold/foldgutter.js')
-// require('codemirror/addon/fold/indent-fold.js')
-// require('codemirror/addon/fold/markdown-fold.js')
-// require('codemirror/addon/fold/xml-fold.js')
+
 export default {
   name: 'hello',
   data() {
