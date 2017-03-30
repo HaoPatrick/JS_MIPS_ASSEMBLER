@@ -13,24 +13,35 @@
                type="success">传授经验</el-button>
     <el-row style="margin-top:10px"
             :gutter="10">
-      <el-col :span="12">
+      <el-col :span="12"
+              style="height:36rem;overflow:auto">
         <codemirror :code="fileContent"
                     :options="editorOption"
                     @change="codeChange"></codemirror>
       </el-col>
-      <el-col style="font-family:consolas"
-              :span="12">
+      <el-col :span="12"
+              style="height:36rem;overflow:auto;font-family:consolas">
         <el-row v-for="(line, index)  in assembleCode"
                 style="background-color:#3f556b"
                 :key="index">
           <el-col :span="1"
                   style="background-color:#34495e;
-                                    color:#ecf0f1; text-align:right;
-                                     padding-right:4px;">{{index}}</el-col>
+                                                                                  color:#ecf0f1; text-align:right;
+                                                                                   padding-right:4px;">{{index}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
         </el-row>
+      </el-col>
+    </el-row>
+    <el-row style="margin-top:0.7rem">
+      <el-col :span="24"
+              style="font-family:consolas;min-height:12rem;color:#fefefe;overflow:auto;background-color:#000">
+        Console:
+        <p style="margin-top:0;margin-bottom:0"
+           v-for="line in consoleOutput">
+          {{line}}
+        </p>
       </el-col>
     </el-row>
   </div>
@@ -53,6 +64,7 @@ export default {
       validLines: [],
       assembleCode: [],
       file: '',
+      consoleOutput: [],
       symbols: {},
       htmlTemp: '',
       editorOption: {
@@ -82,6 +94,14 @@ export default {
     codeChange: function (code) {
       this.fileContent = code
     },
+    toOutput: function (promote) {
+      let self = this
+      let dateString = new Date()
+      dateString = dateString.getHours().toString() + ':' + dateString.getMinutes().toString() + ':' + dateString.getSeconds().toString()
+      let withDate = dateString + ' - ' + promote
+      self.consoleOutput.push(withDate)
+      // console.log(self.consoleOutput)
+    },
     onFileChange: function (e) {
       let self = this
       let files = e.target.files || e.dataTransfer.files
@@ -101,6 +121,7 @@ export default {
             return value !== '' && value !== '\r'
           }
         )
+        self.toOutput('Now load the file')
       }
       reader.readAsText(self.file)
     },
@@ -203,7 +224,7 @@ export default {
       let allFileLines = self.fileContent.replace(/\r/g, ' ').split('\n').filter(line => {
         return line
       })
-      console.log(allFileLines)
+      self.toOutput('Now assemble the source code')
       let result = assemble(allFileLines)
       self.assembleCode = result.map(
         value => {
