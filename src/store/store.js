@@ -41,7 +41,7 @@ const state = {
 }
 
 const mutations = {
-  setRegister(registers) {
+  setRegister(state, registers) {
     state.registers = registers
   }
 }
@@ -50,6 +50,11 @@ const getters = {
   registers: state => state.registers
 }
 
+// const actions = {
+//   setReg(context) {
+//     context.commit('setRegister')
+//   }
+// }
 export default new Vuex.Store({
   state,
   getters,

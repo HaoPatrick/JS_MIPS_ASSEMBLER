@@ -92,7 +92,7 @@ function handleInstructionR(operateCode, data) {
   return assemblyLine
 }
 
-function uintToInt(uint, nbit) {
+export function uintToInt(uint, nbit) {
   nbit = +nbit || 32
   if (nbit > 32) throw new RangeError('uintToInt only supports ints up to 32 bits')
   uint <<= 32 - nbit

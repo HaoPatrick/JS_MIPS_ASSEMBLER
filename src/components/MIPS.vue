@@ -177,8 +177,11 @@ export default {
     },
     debug: function () {
       let self = this
-      let allLines = self.validLines
+      self.compile()
+      let allLines = self.assembleCode
+      run(allLines[0])
       run(allLines[1])
+      run(allLines[2])
       // console.log(run)
     },
     toOutput: function (promote) {
