@@ -43,6 +43,8 @@
       <el-col :span="7">
         <el-button type="danger"
                    @click="debug">Debug</el-button>
+        <el-button type="danger"
+                   @click="decompile">Deassemble</el-button>
         <el-tabs v-model="activeTab">
           <el-tab-pane label="User"
                        name="first">
@@ -84,6 +86,7 @@ import constants from '../assets/instructions.js'
 import { assemble } from '../assets/temp.js'
 import run from '../assets/run.js'
 import { codemirror } from 'vue-codemirror'
+import deassemble from '../assets/deassemble.js'
 
 require('codemirror/addon/selection/active-line.js')
 
@@ -91,12 +94,12 @@ export default {
   name: 'hello',
   data() {
     return {
-      msg: 'Welcome to Your Vue.js App',
       fileContent: '',
       fileLineList: [],
       validLines: [],
       assembleCode: [],
       file: '',
+      activeTab: 0,
       consoleOutput: [],
       symbols: {},
       htmlTemp: '',
@@ -142,6 +145,11 @@ export default {
   methods: {
     codeChange: function (code) {
       this.fileContent = code
+    },
+    decompile: function () {
+      let self = this
+      self.compile()
+      deassemble(self.assembleCode)
     },
     debug: function () {
       let self = this
