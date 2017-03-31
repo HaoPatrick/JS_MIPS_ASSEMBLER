@@ -1,5 +1,5 @@
 import { getInstruction } from './deassemble.js'
-export function runCode(line) {
+export default function runCode(line) {
   let operateCode = line.slice(0, 6)
   operateCode = parseInt(operateCode, 2).toString(16)
   let funcCode = line.slice(-6)
