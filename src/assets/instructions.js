@@ -1,93 +1,4 @@
-let allRegisters = [
-  '$zero',
-  '$at',
-  '$v0',
-  '$V1',
-  '$a0',
-  '$a1',
-  '$a2',
-  '$a3',
-  '$t0',
-  '$t1',
-  '$t2',
-  '$t3',
-  '$t4',
-  '$t5',
-  '$t6',
-  '$t7',
-  '$s0',
-  '$s1',
-  '$s2',
-  '$s3',
-  '$s4',
-  '$s5',
-  '$s6',
-  '$s7',
-  '$t8',
-  '$t9',
-  '$K0',
-  '$K1',
-  '$gp',
-  '$sp',
-  '$s8',
-  '$ra'
-]
-
-let instructions = [
-  { ins: 'lw', code: '23' },
-  { ins: 'lb', code: '20' },
-  { ins: 'lbu', code: '24' },
-  { ins: 'lh', code: '21' },
-  { ins: 'lhu', code: '25' },
-  { ins: 'sw', code: '2b' },
-  { ins: 'sb', code: '28' },
-  { ins: 'sh', code: '29' },
-  { ins: 'add', code: '0', code1: '20' },
-  { ins: 'addu', code: '0', code1: '21' },
-  { ins: 'sub', code: '0', code1: '22' },
-  { ins: 'subu', code: '0', code1: '23' },
-  { ins: 'slt', code: '0', code1: '2a' },
-  { ins: 'sltu', code: '0', code1: '2b' },
-  { ins: 'and', code: '0', code1: '24' },
-  { ins: 'or', code: '0', code1: '25' },
-  { ins: 'xor', code: '0', code1: '26' },
-  { ins: 'nor', code: '0', code1: '27' },
-  { ins: 'sll', code: '0', code1: '0' },
-  { ins: 'srl', code: '0', code1: '2' },
-  { ins: 'sra', code: '0', code1: '3' },
-  { ins: 'mult', code: '0', code1: '18' },
-  { ins: 'multu', code: '0', code1: '19' },
-  { ins: 'div', code: '0', code1: '1' },
-  { ins: 'divu', code: '0', code1: '1b' },
-  { ins: 'addi', code: '8' },
-  { ins: 'addiu', code: '9' },
-  { ins: 'andi', code: 'c' },
-  { ins: 'ori', code: 'd' },
-  { ins: 'xori', code: 'e' },
-  { ins: 'lui', code: 'f' },
-  { ins: 'slti', code: 'a' },
-  { ins: 'sltiu', code: 'b' },
-  { ins: 'beq', code: '4' },
-  { ins: 'bne', code: '5' },
-  { ins: 'blez', code: '6' },
-  { ins: 'bgtz', code: '7' },
-  // { ins: 'bltz', code: '23h' },
-  // { ins: 'bgez', code: '23h' },
-  { ins: 'j', code: '2' },
-  { ins: 'jal', code: '3' },
-  { ins: 'jalr', code: '0', code1: '9' },
-  { ins: 'jr', code: '0', code1: '8' },
-  { ins: 'mfhi', code: '0', code1: '10' },
-  { ins: 'mflo', code: '0', code1: '12' },
-  { ins: 'mthi', code: '0', code1: '11' },
-  { ins: 'mtlo', code: '0', code1: '13' },
-  { ins: 'eret', code: '10', code1: '18' },
-  // { ins: 'mfco', code: '10' },
-  { ins: 'mtco', code: '10' },
-  { ins: 'break', code: '0', code1: 'd' },
-  { ins: 'syscall', code: '0', code1: 'c' }
-]
-let newIns = {
+export let dictionary = {
   '#DataAddr': {
     op: 'data',
     format: 'imm',
@@ -659,15 +570,39 @@ let newIns = {
     type: 'N'
   }
 }
-let register = {}
-allRegisters.forEach(
-  (element, index) => {
-    register[element] = index
-    // console.log(element)
-  }
-)
-let constants = {}
-constants.register = register
-constants.instructions = instructions
-constants.newIns = newIns
-export default constants
+
+export let registers = {
+  '$zero': 0,
+  '$at': 1,
+  '$v0': 2,
+  '$v1': 3,
+  '$a0': 4,
+  '$a1': 5,
+  '$a2': 6,
+  '$a3': 7,
+  '$t0': 8,
+  '$t1': 9,
+  '$t2': 10,
+  '$t3': 11,
+  '$t4': 12,
+  '$t5': 13,
+  '$t6': 14,
+  '$t7': 15,
+  '$s0': 16,
+  '$s1': 17,
+  '$s2': 18,
+  '$s3': 19,
+  '$s4': 20,
+  '$s5': 21,
+  '$s6': 22,
+  '$s7': 23,
+  '$t8': 24,
+  '$t9': 25,
+  '$k0': 26,
+  '$k1': 27,
+  '$gp': 28,
+  '$sp': 29,
+  '$fp': 30,
+  '$ra': 31
+}
+export default dictionary
