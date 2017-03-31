@@ -32,15 +32,8 @@
       </el-submenu>
   
     </el-menu>
-    <!--<label for="file-upload"
-             class="custom-file-upload">
-        <i class="fa fa-cloud-upload"></i>打开一个
-      </label>
-      <input id="file-upload"
-             @change="onFileChange"
-             accept="*"
-             type="file">-->
-    <el-row style="margin:10px 0 0 0"
+    <el-row v-if="fileContent"
+            style="margin:10px 0 0 0"
             :gutter="10">
       <el-col :span="7"
               style="height:36rem;overflow:auto">
@@ -79,7 +72,6 @@
                        name="third">Role</el-tab-pane>
           <el-tab-pane label="Task"
                        name="Task">Task</el-tab-pane>
-  
         </el-tabs>
   
       </el-col>
@@ -116,7 +108,7 @@ export default {
       assembleCode: [],
       file: '',
       activeIndex: '1',
-      activeTab: 0,
+      activeTab: 'first',
       consoleOutput: [],
       symbols: {},
       htmlTemp: '',
@@ -139,10 +131,7 @@ export default {
         { regName: '$r7', regValue: 0 },
         { regName: '$r8', regValue: 0 }
       ],
-      currOption: 0,
-      instructRegx: '(\\s*)?(\\w+)(\\s+)(\\$\\w+)(\\s*)?(,)(\\s*)?(\\$\\w+)(\\s*)?(,)(\\s*)?(\\$\\w+)(\\s*)?(\\s*)(\\/\\/.*)?',
-      commentRegx: '(\\s*)(\\#.*)',
-      labelRegx: '(\\s*)(\\.\\w+)(\\s+)(\\w+)(\\s*)(\\/\\/.*)?'
+      currOption: 0
     }
   },
   components: {
@@ -193,11 +182,6 @@ export default {
       console.log(run)
       console.log(allLines[1])
       // console.log(run)
-    },
-    changeOption: function () {
-      let self = this
-      let currValue = self.options[self.currOption]
-      self.toOutput('Assemble mode switched to ' + currValue.label)
     },
     toOutput: function (promote) {
       let self = this

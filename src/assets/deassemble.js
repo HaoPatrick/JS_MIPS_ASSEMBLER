@@ -111,7 +111,7 @@ function getRegister(regCode) {
   }
   return false
 }
-function getInstruction(operateCode, funcCode) {
+export function getInstruction(operateCode, funcCode) {
   for (let i in dictionary) {
     if (dictionary[i].op.toString(16) === operateCode && operateCode !== '0') {
       let result = dictionary[i]

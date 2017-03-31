@@ -1,16 +1,12 @@
-import { tokenize } from './temp.js'
-export default function run(line) {
-  if (line.match(':')) {
-    return
-  }
-  let token = tokenize(line)
-  if (!token) return false
+import { getInstruction } from './deassemble.js'
+export function runCode(line) {
+  let operateCode = line.slice(0, 6)
+  operateCode = parseInt(operateCode, 2).toString(16)
+  let funcCode = line.slice(-6)
+  funcCode = parseInt(funcCode, 2).toString(16)
+  let instruction = getInstruction(operateCode, funcCode)
+  if (!instruction) return false
 
-  // let rt, rs, imm
-  if (token.op === 'addi') {
-    // rt = token.data[0]
-    // rs = token.data[1]
-    // imm = token.data[3]
+  switch (instruction.code) {
   }
-  console.log(token)
 }
