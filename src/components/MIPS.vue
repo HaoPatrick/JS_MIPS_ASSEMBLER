@@ -57,7 +57,7 @@
         <el-tabs v-model="activeTab">
           <el-tab-pane label="User"
                        name="first">
-            <el-table :data="regData">
+            <el-table :data="sType">
               <el-table-column prop="regName"
                                label="寄存器">
               </el-table-column>
@@ -67,11 +67,27 @@
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="Config"
-                       name="second">Config</el-tab-pane>
+                       name="second">
+            <el-table :data="tType">
+              <el-table-column prop="regName"
+                               label="寄存器">
+              </el-table-column>
+              <el-table-column prop="regValue"
+                               label="值">
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
           <el-tab-pane label="Role"
-                       name="third">Role</el-tab-pane>
-          <el-tab-pane label="Task"
-                       name="Task">Task</el-tab-pane>
+                       name="third">
+            <el-table :data="otherType">
+              <el-table-column prop="regName"
+                               label="寄存器">
+              </el-table-column>
+              <el-table-column prop="regValue"
+                               label="值">
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
         </el-tabs>
   
       </el-col>
@@ -95,6 +111,7 @@ import { assemble } from '../assets/temp.js'
 import run from '../assets/run.js'
 import { codemirror } from 'vue-codemirror'
 import deassemble from '../assets/deassemble.js'
+import { mapGetters } from 'vuex'
 
 require('codemirror/addon/selection/active-line.js')
 
@@ -140,8 +157,54 @@ export default {
   filters: {
   },
   computed: {
+    ...mapGetters([
+      'registers'
+    ]),
     editor() {
       return this.$refs.codeEditor.editor
+    },
+    tType: function () {
+      return [
+        { regName: '$t0', regValue: this.registers[8] },
+        { regName: '$t1', regValue: this.registers[9] },
+        { regName: '$t2', regValue: this.registers[10] },
+        { regName: '$t3', regValue: this.registers[11] },
+        { regName: '$t4', regValue: this.registers[12] },
+        { regName: '$t5', regValue: this.registers[13] },
+        { regName: '$t6', regValue: this.registers[14] },
+        { regName: '$t7', regValue: this.registers[15] },
+        { regName: '$t8', regValue: this.registers[24] },
+        { regName: '$t9', regValue: this.registers[25] }
+      ]
+    },
+    sType: function () {
+      return [
+        { regName: '$s0', regValue: this.registers[16] },
+        { regName: '$s1', regValue: this.registers[17] },
+        { regName: '$s2', regValue: this.registers[18] },
+        { regName: '$s3', regValue: this.registers[19] },
+        { regName: '$s4', regValue: this.registers[20] },
+        { regName: '$s5', regValue: this.registers[21] },
+        { regName: '$s6', regValue: this.registers[22] },
+        { regName: '$s7', regValue: this.registers[23] },
+        { regName: '$s8', regValue: this.registers[30] }
+      ]
+    },
+    otherType: function () {
+      return [
+        { regName: '$zero', regValue: 0 },
+        { regName: '$at', regValue: this.registers[1] },
+        { regName: '$v0', regValue: this.registers[2] },
+        { regName: '$v1', regValue: this.registers[3] },
+        { regName: '$a0', regValue: this.registers[4] },
+        { regName: '$a1', regValue: this.registers[5] },
+        { regName: '$a2', regValue: this.registers[6] },
+        { regName: '$k0', regValue: this.registers[26] },
+        { regName: '$k1', regValue: this.registers[27] },
+        { regName: '$gp', regValue: this.registers[28] },
+        { regName: '$sp', regValue: this.registers[29] },
+        { regName: '$ra', regValue: this.registers[31] }
+      ]
     }
   },
   methods: {
