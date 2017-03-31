@@ -1,5 +1,21 @@
 <template>
   <div class="hello">
+    <el-menu theme="dark"
+             style="margin-bottom:8px"
+             :default-active="activeIndex"
+             class="el-menu-demo"
+             mode="horizontal"
+             @select="handleSelect">
+      <el-menu-item index="1">HLH 的 MIPS 汇编器</el-menu-item>
+      <el-menu-item index="compile">开始编译</el-menu-item>
+      <el-menu-item index="decompile">开始反编译</el-menu-item>
+      <el-submenu index="2">
+        <template slot="title">选项</template>
+        <el-menu-item index="line-num">显示/隐藏行号</el-menu-item>
+        <el-menu-item index="2-2">item two</el-menu-item>
+        <el-menu-item index="2-3">item three</el-menu-item>
+      </el-submenu>
+    </el-menu>
     <label for="file-upload"
            class="custom-file-upload">
       <i class="fa fa-cloud-upload"></i>打开一个
@@ -17,10 +33,9 @@
            @change="onFileChange"
            accept="*"
            type="file">
-    <el-button size="small"
-               @click="compile"
-               type="success">传授经验</el-button>
-    <el-row style="margin-top:10px"
+    <el-button type="danger"
+               @click="debug">Debug</el-button>
+    <el-row style="margin:10px 0 0 0"
             :gutter="10">
       <el-col :span="7"
               style="height:36rem;overflow:auto">
@@ -33,18 +48,15 @@
         <el-row v-for="(line, index)  in assembleCode"
                 style="background-color:rgb(38,50,56);"
                 :key="index">
-          <el-col :span="1"
-                  style=" color:rgb(73, 122, 99); text-align:right;padding-right:2px;">{{index}}</el-col>
+          <el-col v-if="!displayLineNum"
+                  :span="1"
+                  style=" color:rgb(73, 122, 99); text-align:right;padding-right:2px;">{{index+1}}</el-col>
           <el-col :span="23"
                   style="padding-left:8px;color:#ecf0f1;"
                   v-html="line"></el-col>
         </el-row>
       </el-col>
       <el-col :span="7">
-        <el-button type="danger"
-                   @click="debug">Debug</el-button>
-        <el-button type="danger"
-                   @click="decompile">Deassemble</el-button>
         <el-tabs v-model="activeTab">
           <el-tab-pane label="User"
                        name="first">
@@ -99,6 +111,7 @@ export default {
       validLines: [],
       assembleCode: [],
       file: '',
+      activeIndex: '1',
       activeTab: 0,
       consoleOutput: [],
       symbols: {},
@@ -111,6 +124,7 @@ export default {
         lineWrapping: true,
         theme: 'material'
       },
+      displayLineNum: false,
       options: [
         { label: 'Binary', value: 0 },
         { label: 'Debug', value: 1 },
@@ -146,10 +160,18 @@ export default {
     codeChange: function (code) {
       this.fileContent = code
     },
-    decompile: function () {
+    handleSelect: function (key, path) {
       let self = this
-      self.compile()
-      deassemble(self.assembleCode)
+      if (key === 'line-num') {
+        self.displayLineNum = !self.displayLineNum
+        self.toOutput((!self.displayLineNum ? 'Show' : 'Hide') + ' line number')
+      } else if (key === 'compile') {
+        self.compile()
+      } else if (key === 'decompile') {
+        self.toOutput('Begin decompile')
+        let result = deassemble(self.validLines)
+        self.assembleCode = result
+      }
     },
     debug: function () {
       let self = this
@@ -184,7 +206,7 @@ export default {
       reader.onload = function (e) {
         let contents = e.target.result
         self.fileContent = contents
-        self.fileLineList = contents.split('\n')
+        self.fileLineList = contents.replace(/\r/g, '').split('\n')
         self.validLines = self.fileLineList.filter(
           value => {
             return value !== '' && value !== '\r'

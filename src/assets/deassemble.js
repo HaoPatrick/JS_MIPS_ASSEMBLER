@@ -1,6 +1,6 @@
 import { dictionary, registers } from './instructions.js'
 export function deassemble(content) {
-  let result
+  let result = []
   for (let i in content) {
     let operateCode = content[i].slice(0, 6)
     operateCode = parseInt(operateCode, 2).toString(16)
@@ -11,18 +11,16 @@ export function deassemble(content) {
     if (!instruction) continue
     if (instruction.type === 'J') {
       let resultLine = handleInstructionJ(instruction, content[i])
-      console.log(resultLine)
+      result.push(resultLine)
     } else if (instruction.type === 'R') {
       let resultLine = handleInstructionR(instruction, content[i])
-      console.log(resultLine)
+      result.push(resultLine)
     } else if (instruction.type === 'I') {
       let resultLine = handleInstructionI(instruction, content[i])
-      console.log(resultLine)
+      result.push(resultLine)
     }
-    // console.log(instruction)
   }
-
-  console.log(result)
+  return result
 }
 
 function handleInstructionJ(operateCode, data) {
@@ -121,7 +119,7 @@ function getInstruction(operateCode, funcCode) {
       return result
     }
     if (dictionary[i].op.toString(16) === operateCode &&
-      dictionary[i].func &&
+      dictionary[i].func !== undefined &&
       dictionary[i].func.toString(16) === funcCode) {
       let result = dictionary[i]
       result.code = i
