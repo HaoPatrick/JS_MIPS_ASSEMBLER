@@ -68,7 +68,6 @@
       },
     }
   });
-  console.log('lkajsdlfkajslkfjaslk')
 
   CodeMirror.defineMIME("text/x-mips", "mips");
 

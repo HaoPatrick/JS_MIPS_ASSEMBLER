@@ -178,9 +178,7 @@ export default {
     debug: function () {
       let self = this
       let allLines = self.validLines
-      // run(allLines[1])
-      console.log(run)
-      console.log(allLines[1])
+      run(allLines[1])
       // console.log(run)
     },
     toOutput: function (promote) {
