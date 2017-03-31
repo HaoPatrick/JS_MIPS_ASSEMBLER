@@ -31,14 +31,33 @@ function handleInstructionJ(operateCode, data) {
 }
 
 function handleInstructionR(operateCode, data) {
-  let assemblyLine = operateCode.code
-  let rs, rt, rd, shamt, func
-  rs = getRegister(data.slice(6, 11))
-  rt = getRegister(data.slice(11, 16))
-  rd = getRegister(data.slice(16, 21))
-  shamt = data.slice(21, 26)
-  func = data.slice(26, 31)
-  assemblyLine += rs + rt + rd + shamt + func
+  let assemblyLine = operateCode.code + ' '
+  let rs, rt, rd, shamt
+  rs = getRegister(data.slice(6, 11)).code
+  rt = getRegister(data.slice(11, 16)).code
+  rd = getRegister(data.slice(16, 21)).code
+  shamt = parseInt(data.slice(21, 26), 2)
+
+  switch (operateCode.format) {
+    case 'rd/rs/rt':
+      assemblyLine += rd + ', ' + rs + ', ' + rt
+      break
+    case 'rs/rt':
+      assemblyLine += rs + ', ' + rt
+      break
+    case 'rd':
+      assemblyLine += rd
+      break
+    case 'rs':
+      assemblyLine += rs
+      break
+    case 'rd/rt/shamt':
+      assemblyLine += rd + ', ' + rt + ', ' + shamt
+      break
+    case 'rd/rt/rs':
+      assemblyLine += rd + ', ' + rt + ', ' + rs
+      break
+  }
   return assemblyLine
 }
 
