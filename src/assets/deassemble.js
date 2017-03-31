@@ -15,6 +15,9 @@ export function deassemble(content) {
     } else if (instruction.type === 'R') {
       let resultLine = handleInstructionR(instruction, content[i])
       console.log(resultLine)
+    } else if (instruction.type === 'I') {
+      let resultLine = handleInstructionI(instruction, content[i])
+      console.log(resultLine)
     }
     // console.log(instruction)
   }
@@ -27,6 +30,36 @@ function handleInstructionJ(operateCode, data) {
   let offset = data.slice(6)
   offset = uintToInt(parseInt(offset, 2), offset.length)
   assemblyLine += ' ' + offset.toString()
+  return assemblyLine
+}
+
+function handleInstructionI(operateCode, data) {
+  let assemblyLine = operateCode.code + ' '
+  let rs, rt, imme
+  rs = getRegister(data.slice(6, 11)).code
+  rt = getRegister(data.slice(11, 16)).code
+  imme = uintToInt(parseInt(data.slice(16), 2), data.slice(16).length)
+
+  switch (operateCode.format) {
+    case 'rt/rs/imm':
+      assemblyLine += rt + ', ' + rs + ', ' + imme
+      break
+    case 'rs/imm':
+      assemblyLine += rs + ', ' + imme
+      break
+    case 'rt/imm/rs':
+      assemblyLine += rt + ', ' + imme + '(' + rs + ')'
+      break
+    case 'rs/label':
+      console.log('WTF? I didnt use label')
+      assemblyLine += rs + ', ' + imme
+      break
+    case 'rt/imm':
+      assemblyLine += rt + imme
+      break
+    case 'rs/rt/label':
+      assemblyLine += rs + ', ' + rt + ', ' + imme
+  }
   return assemblyLine
 }
 
