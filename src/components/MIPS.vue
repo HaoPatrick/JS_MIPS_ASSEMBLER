@@ -7,34 +7,39 @@
              mode="horizontal"
              @select="handleSelect">
       <el-menu-item index="1">HLH 的 MIPS 汇编器</el-menu-item>
-      <el-menu-item index="compile">开始编译</el-menu-item>
+      <el-menu-item index="open">
+        <label for="file-uploada">
+          打开一个
+        </label>
+        <input id="file-uploada"
+               @change="onFileChange"
+               accept="*"
+               type="file">
+      </el-menu-item>
+      <el-submenu index="compile">
+        <template slot="title">开始编译</template>
+        <el-menu-item index="binary-mode">到Binary</el-menu-item>
+        <el-menu-item index="debug-mode">调试模式</el-menu-item>
+        <el-menu-item index="coe-mode">到Coe</el-menu-item>
+      </el-submenu>
       <el-menu-item index="decompile">开始反编译</el-menu-item>
+      <el-menu-item index="debug">调试</el-menu-item>
       <el-submenu index="2">
         <template slot="title">选项</template>
         <el-menu-item index="line-num">显示/隐藏行号</el-menu-item>
         <el-menu-item index="2-2">item two</el-menu-item>
         <el-menu-item index="2-3">item three</el-menu-item>
       </el-submenu>
+  
     </el-menu>
-    <label for="file-upload"
-           class="custom-file-upload">
-      <i class="fa fa-cloud-upload"></i>打开一个
-    </label>
-    <el-select @change="changeOption"
-               v-model="currOption"
-               placeholder="Select">
-      <el-option v-for="item in options"
-                 :key="item.id"
-                 :label="item.label"
-                 :value="item.value">
-      </el-option>
-    </el-select>
-    <input id="file-upload"
-           @change="onFileChange"
-           accept="*"
-           type="file">
-    <el-button type="danger"
-               @click="debug">Debug</el-button>
+    <!--<label for="file-upload"
+             class="custom-file-upload">
+        <i class="fa fa-cloud-upload"></i>打开一个
+      </label>
+      <input id="file-upload"
+             @change="onFileChange"
+             accept="*"
+             type="file">-->
     <el-row style="margin:10px 0 0 0"
             :gutter="10">
       <el-col :span="7"
@@ -52,8 +57,7 @@
                   :span="1"
                   style=" color:rgb(73, 122, 99); text-align:right;padding-right:2px;">{{index+1}}</el-col>
           <el-col :span="23"
-                  style="padding-left:8px;color:#ecf0f1;"
-                  v-html="line"></el-col>
+                  style="padding-left:8px;color:#ecf0f1;">{{line}}</el-col>
         </el-row>
       </el-col>
       <el-col :span="7">
@@ -125,11 +129,6 @@ export default {
         theme: 'material'
       },
       displayLineNum: false,
-      options: [
-        { label: 'Binary', value: 0 },
-        { label: 'Debug', value: 1 },
-        { label: 'Coe', value: 2 }
-      ],
       regData: [
         { regName: '$r1', regValue: 0 },
         { regName: '$r2', regValue: 0 },
@@ -171,6 +170,20 @@ export default {
         self.toOutput('Begin decompile')
         let result = deassemble(self.validLines)
         self.assembleCode = result
+      } else if (key === 'debug') {
+        self.debug()
+      } else if (key === 'binary-mode') {
+        self.currOption = 0
+        self.toOutput('Source code => binary')
+        self.compile()
+      } else if (key === 'debug-mode') {
+        self.toOutput('Source code => debug')
+        self.currOption = 1
+        self.compile()
+      } else if (key === 'coe-mode') {
+        self.toOutput('Source code => coe')
+        self.currOption = 2
+        self.compile()
       }
     },
     debug: function () {
@@ -310,7 +323,6 @@ export default {
       let allFileLines = self.fileContent.replace(/\r/g, ' ').split('\n').filter(line => {
         return line
       })
-      self.toOutput('Source code => ' + self.options[self.currOption].label)
       let result = assemble(allFileLines)
       result = result.map(
         value => {
