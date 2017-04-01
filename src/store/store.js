@@ -37,17 +37,28 @@ const state = {
     '29': 0,
     '30': 0,
     '31': 0
-  }
+  },
+  stack: []
 }
 
 const mutations = {
   setRegister(state, registers) {
     state.registers = registers
+  },
+  pushStack(state, value) {
+    state.stack.append(value)
+  },
+  popStack(state) {
+    state.stack.slice(0, -1)
+  },
+  setStack(state, stack) {
+    state.stack = stack
   }
 }
 
 const getters = {
-  registers: state => state.registers
+  registers: state => state.registers,
+  stack: state => state.stack
 }
 
 // const actions = {

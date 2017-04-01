@@ -35,13 +35,13 @@
     <el-row v-if="fileContent"
             style="margin:10px 0 0 0"
             :gutter="10">
-      <el-col :span="7"
+      <el-col :span="8"
               style="height:36rem;overflow:auto">
         <codemirror :code="fileContent"
                     :options="editorOption"
                     @change="codeChange"></codemirror>
       </el-col>
-      <el-col :span="7"
+      <el-col :span="9"
               style="height:36rem;overflow:auto;font-family:consolas">
         <el-row v-for="(line, index)  in assembleCode"
                 style="background-color:rgb(38,50,56);"
@@ -50,12 +50,13 @@
                   :span="1"
                   style=" color:rgb(73, 122, 99); text-align:right;padding-right:2px;">{{index+1}}</el-col>
           <el-col :span="23"
+                  v-bind:class="{ 'hight-light': index==debugInfo.pc&&debugInfo.debug }"
                   style="padding-left:8px;color:#ecf0f1;">{{line}}</el-col>
         </el-row>
       </el-col>
-      <el-col :span="7">
+      <el-col :span="4">
         <el-tabs v-model="activeTab">
-          <el-tab-pane label="User"
+          <el-tab-pane label="R Type"
                        name="first">
             <el-table :data="sType">
               <el-table-column prop="regName"
@@ -66,7 +67,7 @@
               </el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="Config"
+          <el-tab-pane label="T Type"
                        name="second">
             <el-table :data="tType">
               <el-table-column prop="regName"
@@ -77,7 +78,7 @@
               </el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="Role"
+          <el-tab-pane label="Others"
                        name="third">
             <el-table :data="otherType">
               <el-table-column prop="regName"
@@ -136,6 +137,10 @@ export default {
         mode: 'text/x-mips',
         lineWrapping: true,
         theme: 'material'
+      },
+      debugInfo: {
+        pc: 0,
+        debug: false
       },
       displayLineNum: false,
       regData: [
@@ -240,11 +245,15 @@ export default {
     },
     debug: function () {
       let self = this
-      self.compile()
+      self.debugInfo.debug = true
+      // self.compile()
+      if (!self.assembleCode) {
+        self.compile()
+      }
       let allLines = self.assembleCode
-      run(allLines[0])
-      run(allLines[1])
-      run(allLines[2])
+      if (run(allLines[self.debugInfo.pc])) {
+        self.debugInfo.pc += 1
+      }
       // console.log(run)
     },
     toOutput: function (promote) {
@@ -464,5 +473,9 @@ input[type="file"] {
 .el-col::-webkit-scrollbar-thumb {
   background-color: darkgrey;
   outline: 1px solid slategrey;
+}
+
+.hight-light {
+  background-color: #d35400
 }
 </style>
