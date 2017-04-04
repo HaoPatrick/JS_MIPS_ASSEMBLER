@@ -251,10 +251,7 @@ export default {
         self.compile()
       }
       let allLines = self.assembleCode
-      if (run(allLines[self.debugInfo.pc])) {
-        self.debugInfo.pc += 1
-      }
-      // console.log(run)
+      self.debugInfo.pc += run(allLines[self.debugInfo.pc])
     },
     toOutput: function (promote) {
       let self = this
@@ -377,9 +374,10 @@ export default {
     },
     compile: function () {
       let self = this
-      let allFileLines = self.fileContent.replace(/\r/g, ' ').split('\n').filter(line => {
+      let allFileLines = self.fileContent.replace(/\r/g, '').split('\n').filter(line => {
         return line
       })
+      console.log('all: ', allFileLines)
       let result = assemble(allFileLines)
       result = result.map(
         value => {

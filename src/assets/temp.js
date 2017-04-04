@@ -8,16 +8,16 @@ let parseMode = 'instruction'
 let memory = []
 
 function labelToAddress(label) {
-  if (labelTable[label[0]] !== undefined) {
-    return labelTable[label[0]]
+  if (labelTable[label] !== undefined) {
+    return labelTable[label]
   } else {
     return -1
   }
 }
 
 function labelToOffset(label) {
-  if (labelTable[label[0]] !== undefined) {
-    return labelTable[label[0]] - curAddr
+  if (labelTable[label] !== undefined) {
+    return labelTable[label] - curAddr
   } else {
     return -1
   }
@@ -35,30 +35,23 @@ export function assemble(content) {
   memory = []
   curAddr = 0
   let i, line
+  let tempAddr = 0
   for (i in content) {
     line = content[i].trim()
     if (line.match(':')) {
       line = line.split(':')
       if (line.length === 2) {
         let label = line[0]
-
-        labelTable[label] = curAddr
-      } else {
+        labelTable[label] = tempAddr * 4
       }
       continue
     }
+    tempAddr += 1
   }
+  console.log('first round')
   for (i in content) {
     line = content[i].trim()
-
     if (line.match(':')) {
-      line = line.split(':')
-      if (line.length === 2) {
-        let label = line[0]
-
-        labelTable[label] = curAddr
-      } else {
-      }
       continue
     }
 
@@ -84,14 +77,14 @@ export function assemble(content) {
       curAddr += 4
     }
   }
-  for (let i in memory) {
-    if (memory[i].asm.type === 'J') {
-      let transJ = translate(memory[i].asm, memory[i].asmData)
-      if (transJ) {
-        memory[i].instruction = transJ
-      }
-    }
-  }
+  // for (let i in memory) {
+  //   if (memory[i].asm.type === 'J') {
+  //     let transJ = translate(memory[i].asm, memory[i].asmData)
+  //     if (transJ) {
+  //       memory[i].instruction = transJ
+  //     }
+  //   }
+  // }
   return memory
 }
 
@@ -173,8 +166,8 @@ function handleInstructionJ(operation, data) {
   let opcode = operation.op
   let res = leftpad(opcode.toString(2), 6)
 
-  if (labelToAddress(data) !== -1) {
-    res = res + leftpad(labelToAddress(data).toString(2).slice(0, -2), 26)
+  if (labelToOffset(data) !== -1) {
+    res = res + toBaseTwo(labelToOffset(data) / 4, 26)
     return res
   } else {
     return false
@@ -359,4 +352,5 @@ function handleInstructionE(opcode, format, data) {
   console.log(addrPointer)
   console.log(parseMode)
   console.log(dataAddr)
+  console.log(labelToAddress)
 }

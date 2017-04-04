@@ -22,9 +22,11 @@ export default function runCode(line) {
     stack[offset] = allReg[rt]
   } else if (instruction.code === 'slti') {
     allReg[rs] < imme ? allReg[rt] = 1 : allReg[rt] = 0
+  } else if (instruction.code === 'beq') {
+    if (allReg[rs] === allReg[rt]) return imme
   }
   store.commit('setStack', stack)
   store.commit('setRegister', allReg)
   console.log('done')
-  return true
+  return 1
 }
