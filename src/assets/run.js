@@ -1,7 +1,7 @@
 import { getInstruction, uintToInt } from './deassemble.js'
 import store from '../store/store.js'
 
-export default function runCode(line) {
+export default function runCode(line, currPC) {
   let allReg = store.getters.registers
   let stack = store.getters.stack
   let operateCode = line.slice(0, 6)
@@ -25,9 +25,9 @@ export default function runCode(line) {
   } else if (instruction.code === 'slti') {
     allReg[rs] < imme ? allReg[rt] = 1 : allReg[rt] = 0
   } else if (instruction.code === 'beq') {
-    if (allReg[rs] === allReg[rt]) return imme
+    if (allReg[rs] === allReg[rt]) return imme + currPC
   } else if (instruction.code === 'jal') {
-    return imme
+    return imme + currPC
   } else if (instruction.code === 'lw') {
     let offset = allReg[rs] - imme / 4
     allReg[rt] = stack[offset]
@@ -41,10 +41,12 @@ export default function runCode(line) {
     allReg[rt] = allReg[rs] | allReg[rd]
   } else if (instruction.code === 'slt') {
     allReg[rs] < allReg[rd] ? allReg[rt] = 1 : allReg[rt] = 0
+  } else if (instruction.code === 'jr') {
+    return allReg[rs]
   }
 
   store.commit('setStack', stack)
   store.commit('setRegister', allReg)
   console.log('done')
-  return 1
+  return 1 + currPC
 }

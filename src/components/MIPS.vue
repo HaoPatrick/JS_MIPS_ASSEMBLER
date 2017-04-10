@@ -259,7 +259,7 @@ export default {
         self.compile()
       }
       let allLines = self.assembleCode
-      self.debugInfo.pc += run(allLines[self.debugInfo.pc])
+      self.debugInfo.pc = run(allLines[self.debugInfo.pc], self.debugInfo.pc)
     },
     toOutput: function (promote) {
       let self = this
