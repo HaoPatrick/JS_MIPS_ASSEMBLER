@@ -27,8 +27,8 @@
       <el-submenu index="2">
         <template slot="title">选项</template>
         <el-menu-item index="line-num">显示/隐藏行号</el-menu-item>
-        <el-menu-item index="2-2">item two</el-menu-item>
-        <el-menu-item index="2-3">item three</el-menu-item>
+        <el-menu-item index="resetpc">重置 PC</el-menu-item>
+        <el-menu-item index="resetreg">重置 Register</el-menu-item>
       </el-submenu>
   
     </el-menu>
@@ -112,7 +112,7 @@ import { assemble } from '../assets/temp.js'
 import run from '../assets/run.js'
 import { codemirror } from 'vue-codemirror'
 import deassemble from '../assets/deassemble.js'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 require('codemirror/addon/selection/active-line.js')
 
@@ -213,6 +213,9 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'resetRegister'
+    ]),
     codeChange: function (code) {
       this.fileContent = code
     },
@@ -241,6 +244,11 @@ export default {
         self.toOutput('Source code => coe')
         self.currOption = 2
         self.compile()
+      } else if (key === 'resetpc') {
+        self.toOutput('Reset PC to 0')
+        self.debugInfo.pc = 0
+      } else if (key === 'resetreg') {
+        self.resetRegister()
       }
     },
     debug: function () {
