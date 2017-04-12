@@ -1,22 +1,51 @@
 import { dictionary, registers } from './instructions.js'
 export function deassemble(content) {
+  let realContent = []
+  const regex = /([a-fA-F0-9]{8})/g
+  if (content[0].includes('memory')) {
+    for (let i in content) {
+      let temp = content[i].match(regex)
+      realContent.push.apply(realContent, temp)
+    }
+    realContent = realContent.map(value => {
+      let baseTen = parseInt(value, 16)
+      let baseTwo = (baseTen >>> 0).toString(2)
+      let result = ''
+      if (baseTwo.length < 32) {
+        for (let i = 0; i < (32 - baseTwo.length); i++) {
+          result += '0'
+        }
+        result += baseTwo
+        return result
+      }
+      if (baseTwo.length > 32) {
+        result = baseTwo.slice(-1 * 32)
+        return result
+      }
+      result = baseTwo
+      return result
+    })
+  } else {
+    realContent = content
+  }
+
   let result = []
-  for (let i in content) {
-    let operateCode = content[i].slice(0, 6)
+  for (let i in realContent) {
+    let operateCode = realContent[i].slice(0, 6)
     operateCode = parseInt(operateCode, 2).toString(16)
-    let funcCode = content[i].slice(-6)
+    let funcCode = realContent[i].slice(-6)
     funcCode = parseInt(funcCode, 2).toString(16)
     let instruction = getInstruction(operateCode, funcCode)
 
     if (!instruction) continue
     if (instruction.type === 'J') {
-      let resultLine = handleInstructionJ(instruction, content[i])
+      let resultLine = handleInstructionJ(instruction, realContent[i])
       result.push(resultLine)
     } else if (instruction.type === 'R') {
-      let resultLine = handleInstructionR(instruction, content[i])
+      let resultLine = handleInstructionR(instruction, realContent[i])
       result.push(resultLine)
     } else if (instruction.type === 'I') {
-      let resultLine = handleInstructionI(instruction, content[i])
+      let resultLine = handleInstructionI(instruction, realContent[i])
       result.push(resultLine)
     }
   }
