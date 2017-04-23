@@ -131,9 +131,13 @@ export default {
   },
   filters: {
   },
+  created: function () {
+    this.fileContent = this.defaultLines
+  },
   computed: {
     ...mapGetters([
-      'registers'
+      'registers',
+      'defaultLines'
     ]),
     editor() {
       return this.$refs.codeEditor.editor
