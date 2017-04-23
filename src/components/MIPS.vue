@@ -1,20 +1,12 @@
 <template>
   <div class="hello">
-    <el-menu theme="dark"
-             style="margin-bottom:8px"
-             :default-active="activeIndex"
-             class="el-menu-demo"
-             mode="horizontal"
-             @select="handleSelect">
+    <el-menu theme="dark" style="margin-bottom:8px" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
       <el-menu-item index="1">HLH 的 MIPS 汇编器</el-menu-item>
       <el-menu-item index="open">
         <label for="file-uploada">
           打开一个
         </label>
-        <input id="file-uploada"
-               @change="onFileChange"
-               accept="*"
-               type="file">
+        <input id="file-uploada" @change="onFileChange" accept="*" type="file">
       </el-menu-item>
       <el-submenu index="compile">
         <template slot="title">开始编译</template>
@@ -24,6 +16,7 @@
       </el-submenu>
       <el-menu-item index="decompile">开始反编译</el-menu-item>
       <el-menu-item index="debug">调试</el-menu-item>
+      <el-menu-item index="download">下载结果</el-menu-item>
       <el-submenu index="2">
         <template slot="title">选项</template>
         <el-menu-item index="line-num">显示/隐藏行号</el-menu-item>
@@ -32,60 +25,39 @@
       </el-submenu>
   
     </el-menu>
-    <el-row v-if="fileContent"
-            style="margin:10px 0 0 0"
-            :gutter="10">
-      <el-col :span="8"
-              style="height:36rem;overflow:auto">
-        <codemirror :code="fileContent"
-                    :options="editorOption"
-                    @change="codeChange"></codemirror>
+    <el-row v-if="fileContent" style="margin:10px 0 0 0" :gutter="10">
+      <el-col :span="8" style="height:36rem;overflow:auto">
+        <codemirror :code="fileContent" :options="editorOption" @change="codeChange"></codemirror>
       </el-col>
-      <el-col :span="9"
-              style="height:36rem;overflow:auto;font-family:consolas">
-        <el-row v-for="(line, index)  in assembleCode"
-                style="background-color:rgb(38,50,56);"
-                :key="index">
-          <el-col v-if="!displayLineNum"
-                  :span="1"
-                  style=" color:rgb(73, 122, 99); text-align:right;padding-right:2px;">{{index+1}}</el-col>
-          <el-col :span="23"
-                  v-bind:class="{ 'hight-light': index==debugInfo.pc&&debugInfo.debug }"
-                  style="padding-left:8px;color:#ecf0f1;">{{line}}</el-col>
+      <el-col :span="9" style="height:36rem;overflow:auto;font-family:consolas">
+        <el-row v-for="(line, index)  in assembleCode" style="background-color:rgb(38,50,56);" :key="index">
+          <el-col v-if="!displayLineNum" :span="1" style=" color:rgb(73, 122, 99); text-align:right;padding-right:2px;">{{index+1}}</el-col>
+          <el-col :span="23" v-bind:class="{ 'hight-light': index==debugInfo.pc&&debugInfo.debug }" style="padding-left:8px;color:#ecf0f1;">{{line}}</el-col>
         </el-row>
       </el-col>
       <el-col :span="4">
         <el-tabs v-model="activeTab">
-          <el-tab-pane label="R Type"
-                       name="first">
+          <el-tab-pane label="R Type" name="first">
             <el-table :data="sType">
-              <el-table-column prop="regName"
-                               label="寄存器">
+              <el-table-column prop="regName" label="寄存器">
               </el-table-column>
-              <el-table-column prop="regValue"
-                               label="值">
+              <el-table-column prop="regValue" label="值">
               </el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="T Type"
-                       name="second">
+          <el-tab-pane label="T Type" name="second">
             <el-table :data="tType">
-              <el-table-column prop="regName"
-                               label="寄存器">
+              <el-table-column prop="regName" label="寄存器">
               </el-table-column>
-              <el-table-column prop="regValue"
-                               label="值">
+              <el-table-column prop="regValue" label="值">
               </el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="Others"
-                       name="third">
+          <el-tab-pane label="Others" name="third">
             <el-table :data="otherType">
-              <el-table-column prop="regName"
-                               label="寄存器">
+              <el-table-column prop="regName" label="寄存器">
               </el-table-column>
-              <el-table-column prop="regValue"
-                               label="值">
+              <el-table-column prop="regValue" label="值">
               </el-table-column>
             </el-table>
           </el-tab-pane>
@@ -94,11 +66,9 @@
       </el-col>
     </el-row>
     <el-row style="margin-top:0.7rem; background-color:rgb(38,50,56)">
-      <el-col :span="24"
-              style="padding:5px; font-family:consolas;min-height:12rem;color:#fefefe;overflow:auto;background-color:rgb(38,50,56)">
+      <el-col :span="24" style="padding:5px; font-family:consolas;min-height:12rem;color:#fefefe;overflow:auto;background-color:rgb(38,50,56)">
         Console:
-        <p style=" margin-top:0;margin-bottom:0;"
-           v-for="line in consoleOutput">
+        <p style=" margin-top:0;margin-bottom:0;" v-for="line in consoleOutput">
           {{line}}
         </p>
       </el-col>
@@ -249,7 +219,20 @@ export default {
         self.debugInfo.pc = 0
       } else if (key === 'resetreg') {
         self.resetRegister()
+      } else if (key === 'download') {
+        self.download()
       }
+    },
+    download: function () {
+      let self = this
+      let element = document.createElement('a')
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' +
+        encodeURIComponent(self.assembleCode.reduce((x, y) => x + '\n' + y)))
+      element.setAttribute('download', 'hlh-mips')
+      element.style.display = 'none'
+      document.body.appendChild(element)
+      element.click()
+      document.body.removeChild(element)
     },
     debug: function () {
       let self = this

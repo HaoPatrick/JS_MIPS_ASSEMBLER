@@ -169,6 +169,10 @@ function handleInstructionJ(operation, data) {
   if (labelToOffset(data) !== -1) {
     res = res + toBaseTwo(labelToOffset(data) / 4, 26)
     return res
+  } else if (operation.op === 3) {
+    // jal
+    res += toBaseTwo(registers[data], 26)
+    return res
   } else {
     return false
   }
@@ -249,7 +253,7 @@ function handleInstructionI(operation, data) {
 
         res = res + leftpad(translateRegister(rs).toString(2), 5)
         res = res + leftpad(translateRegister(rt).toString(2), 5)
-        res = res + leftpad(labelToOffset(label).toString(2).slice(0, -2), 16)
+        res = res + toBaseTwo(labelToOffset(label), 18).slice(0, -2)
 
         break
       case 'rt/imm':
