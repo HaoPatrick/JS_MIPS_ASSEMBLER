@@ -1,8 +1,14 @@
 # MIPS Assembler
 
-> Hao's mips_assembler
+### Deployed on https://mips.haoxp.xyz, host on Google's server.
 
-> Deployed on https://mips.haoxp.xyz, take as you like.
+Hao's mips_assembler
+
+Technology stack: Javascript(ES6), Vuejs(frontend framework), Webpack, ESLint, Firebase(host)
+
+Require Node >= 7, npm >= 3.5
+
+Github repo: https://github.com/HaoPatrick/JS_MIPS_ASSEMBLER
 
 ## Build Setup
 
