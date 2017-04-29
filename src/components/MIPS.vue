@@ -202,6 +202,7 @@ export default {
         self.compile()
       } else if (key === 'decompile') {
         self.toOutput('Begin decompile')
+        self.computeLines()
         let result = deassemble(self.validLines)
         self.assembleCode = result
       } else if (key === 'debug') {
@@ -254,6 +255,14 @@ export default {
       dateString = dateString.getHours().toString() + ':' + dateString.getMinutes().toString() + ':' + dateString.getSeconds().toString()
       let withDate = dateString + ' - ' + promote
       self.consoleOutput.push(withDate)
+    },
+    computeLines: function () {
+      let self = this
+      self.validLines = self.fileContent.replace(/\r/g, '').split('\n').filter(
+        value => {
+          return value !== '' && value !== '\r'
+        }
+      )
     },
     onFileChange: function (e) {
       let self = this
