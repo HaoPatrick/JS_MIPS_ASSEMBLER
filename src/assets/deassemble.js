@@ -1,4 +1,5 @@
 import { dictionary, registers } from './instructions.js'
+let symbolTable = []
 export function deassemble(content) {
   let realContent = []
   const regex = /([a-fA-F0-9]{8})/g
@@ -39,28 +40,39 @@ export function deassemble(content) {
 
     if (!instruction) continue
     if (instruction.type === 'J') {
-      let resultLine = handleInstructionJ(instruction, realContent[i])
+      let resultLine = handleInstructionJ(instruction, realContent[i], i)
       result.push(resultLine)
     } else if (instruction.type === 'R') {
       let resultLine = handleInstructionR(instruction, realContent[i])
       result.push(resultLine)
     } else if (instruction.type === 'I') {
-      let resultLine = handleInstructionI(instruction, realContent[i])
+      let resultLine = handleInstructionI(instruction, realContent[i], i)
       result.push(resultLine)
     }
   }
+
+  symbolTable.forEach((symbol) => {
+    result.splice(symbolTable.indexOf(symbol) + symbol, 0, 'word_' + symbolTable.indexOf(symbol))
+  })
   return result
 }
 
-function handleInstructionJ(operateCode, data) {
+function handleInstructionJ(operateCode, data, currentLine) {
   let assemblyLine = operateCode.code
   let offset = data.slice(6)
   offset = uintToInt(parseInt(offset, 2), offset.length)
-  assemblyLine += ' ' + offset.toString()
+  console.log('jal', offset + currentLine)
+  let index = parseInt(offset) + parseInt(currentLine)
+  if (symbolTable.indexOf(index) < 0) {
+    symbolTable[symbolTable.length] = index
+  }
+
+  assemblyLine += ' ' + 'word_' + symbolTable.indexOf(index)
+  // assemblyLine += ' ' + offset
   return assemblyLine
 }
 
-function handleInstructionI(operateCode, data) {
+function handleInstructionI(operateCode, data, currentLine) {
   let assemblyLine = operateCode.code + ' '
   let rs, rt, imme
   rs = getRegister(data.slice(6, 11)).code
@@ -85,7 +97,13 @@ function handleInstructionI(operateCode, data) {
       assemblyLine += rt + imme
       break
     case 'rs/rt/label':
-      assemblyLine += rs + ', ' + rt + ', ' + imme
+      let index = parseInt(imme) + parseInt(currentLine)
+      console.log('beq', index)
+      if (symbolTable.indexOf(index) < 0) {
+        symbolTable[symbolTable.length] = index
+      }
+      assemblyLine += rs + ', ' + rt + ', ' + 'word_' + symbolTable.indexOf(index)
+    // assemblyLine += rs + ', ' + rt + ', ' + imme
   }
   return assemblyLine
 }
